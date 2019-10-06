@@ -1,0 +1,16 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+                                 http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+    <persistence-unit name="testingUnit">
+        <class>martinbradley.hospital.core.domain.Patient</class>
+        <class>martinbradley.hospital.core.domain.Medicine</class>
+        <class>martinbradley.hospital.core.domain.Prescription</class>
+        <class>martinbradley.hospital.core.domain.UploadedImage</class>
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
+            <property name="javax.persistence.jdbc.url"    value="jdbc:derby:myDerbyDB;" />
+        </properties>
+    </persistence-unit>
+</persistence>

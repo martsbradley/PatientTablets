@@ -1,0 +1,54 @@
+drop table prescription;
+drop table patient;
+drop table medicine;
+drop table uploadedimage;
+
+create table patient (
+id SERIAL PRIMARY KEY,
+forename varchar(20) NOT NULL,
+surname varchar(50) NOT NULL,
+sex varchar(6) CHECK (sex IN ('Male','Female')) NOT NULL,
+dateofbirth timestamp NOT NULL,
+version integer NOT NULL
+);
+
+create table medicine (
+id SERIAL PRIMARY KEY,
+name varchar(50) NOT NULL,
+manufacturer varchar(50) NOT NULL,
+delivery_method varchar(12) CHECK (delivery_method IN ('Intravenous','Tablet','Liquid','Suppository'))
+);
+
+create table prescription (
+id SERIAL PRIMARY KEY,
+patient_id INTEGER NOT NULL REFERENCES patient (id),
+medicine_id INTEGER NOT NULL REFERENCES medicine (id),
+start_date TIMESTAMP NOT NULL,
+end_date TIMESTAMP NOT NULL,
+amount VARCHAR(40) NOT NULL
+);
+
+
+
+
+create table logindetails (
+id SERIAL PRIMARY KEY,
+name varchar(255),
+given_name varchar(255),
+family_name varchar(255),
+nickname varchar(50),
+gender varchar(10),
+locale varchar(10),
+updated_at varchar(50),
+picture varchar(250),
+groups varchar(250)
+);
+
+create table uploadedimage (
+id SERIAL PRIMARY KEY,
+patient_id INTEGER NOT NULL REFERENCES patient (id),
+name   VARCHAR(250) NOT NULL,
+bucket VARCHAR(40) NOT NULL,
+description VARCHAR(250),
+date_uploaded TIMESTAMP NOT NULL
+);
