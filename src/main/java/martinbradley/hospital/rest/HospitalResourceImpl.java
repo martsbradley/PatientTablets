@@ -1,6 +1,7 @@
 package martinbradley.hospital.rest;
 
 import martinbradley.hospital.core.beans.PatientBean;
+import martinbradley.hospital.core.beans.UserPassword;
 import martinbradley.hospital.core.beans.MedicineBean;
 import martinbradley.hospital.core.beans.PrescriptionBean;
 import martinbradley.hospital.core.beans.ValidationErrors;
@@ -17,6 +18,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
@@ -27,11 +30,15 @@ import martinbradley.hospital.core.beans.PageInfo;
 import static martinbradley.hospital.core.beans.PageInfo.PageInfoBuilder;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 import javax.ws.rs.core.GenericEntity;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.Context;
+import javax.servlet.http.HttpServletRequest;
 
 import martinbradley.hospital.core.api.dto.MessageCollection;
 import martinbradley.hospital.core.api.dto.Message;
@@ -39,7 +46,7 @@ import martinbradley.auth0.SecuredRestfulMethod;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 @Path("/hospital")
-public class HospitalResourceImpl
+public class HospitalResourceImpl 
 {
     @Inject PatientHandler patientHandler;
     @Inject MedicineHandler medicineHandler;
@@ -48,7 +55,6 @@ public class HospitalResourceImpl
     @GET
     @Path("patient/{id}")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"adminGroup"})
     public Response getPatient(@PathParam("id") long patientId)
     {
         logger.info("getPatient byId " + patientId);
@@ -67,7 +73,6 @@ public class HospitalResourceImpl
     @GET
     @Path("patients/")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"adminGroup"})
     public Response pagePatients(@QueryParam("start")  int aStart,
                                  @QueryParam("max")    int aMax,
                                  @QueryParam("sortby") String aSortBy)
@@ -82,6 +87,18 @@ public class HospitalResourceImpl
         GenericEntity<List<PatientBean>> entity = new GenericEntity<List<PatientBean>>(patients) {};
 
         return Response.accepted(entity)
+                       .type(MediaType.APPLICATION_JSON)
+                       .build();
+    }
+
+    @POST
+    @Path("authenticate")
+    @Produces("application/json")
+    public Response authenticate(UserPassword patientBean)
+    {
+        logger.warn("authenticate " + patientBean);
+
+        return Response.accepted()
                        .type(MediaType.APPLICATION_JSON)
                        .build();
     }
@@ -130,7 +147,6 @@ public class HospitalResourceImpl
     @GET
     @Path("patients/total")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"adminGroup"})
     public Response totalPatients()
     {
         logger.debug("totalPatients called");
@@ -144,7 +160,6 @@ public class HospitalResourceImpl
     @GET
     @Path("medicines/")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"adminGroup"})
     public Response pageMedicines(@QueryParam("start")  int aStart,
                                   @QueryParam("max")    int aMax,
                                   @QueryParam("sortby") String aSortBy,
@@ -199,7 +214,6 @@ public class HospitalResourceImpl
     @GET
     @Path("medicines/total")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"adminGroup"})
     public Response totalMedicines(@QueryParam("filter") String filter)
     {
         logger.debug("totalMedicines called");
@@ -228,19 +242,6 @@ public class HospitalResourceImpl
 
 
         return Response.accepted(total)
-                       .type(MediaType.APPLICATION_JSON)
-                       .build();
-    }
-    @GET
-    @Path("patient/{patientId}/images")
-    @Produces("application/json")
-    @SecuredRestfulMethod(groups={"adminGroup"})
-    public Response listImages(@PathParam("patientId") long patientId) {
-        logger.debug("listImages");
-        List<String> urls = patientHandler.listImages(patientId);
-        logger.debug("listImages returning " + urls.size());
-
-        return Response.accepted(urls)
                        .type(MediaType.APPLICATION_JSON)
                        .build();
     }
