@@ -8,6 +8,11 @@
         <class>martinbradley.hospital.core.domain.Medicine</class>
         <class>martinbradley.hospital.core.domain.Prescription</class>
         <class>martinbradley.hospital.core.domain.UploadedImage</class>
+
+        <class>martinbradley.hospital.core.domain.password.AuthUser</class>
+        <class>martinbradley.hospital.core.domain.password.AuthGroup</class>
+        <class>martinbradley.hospital.core.domain.password.AuthUserGroup</class>
+
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
             <property name="javax.persistence.jdbc.url"    value="jdbc:derby:myDerbyDB;" />

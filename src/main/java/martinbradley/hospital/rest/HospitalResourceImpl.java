@@ -1,7 +1,6 @@
 package martinbradley.hospital.rest;
 
 import martinbradley.hospital.core.beans.PatientBean;
-import martinbradley.hospital.core.beans.UserPassword;
 import martinbradley.hospital.core.beans.MedicineBean;
 import martinbradley.hospital.core.beans.PrescriptionBean;
 import martinbradley.hospital.core.beans.ValidationErrors;
@@ -87,18 +86,6 @@ public class HospitalResourceImpl
         GenericEntity<List<PatientBean>> entity = new GenericEntity<List<PatientBean>>(patients) {};
 
         return Response.accepted(entity)
-                       .type(MediaType.APPLICATION_JSON)
-                       .build();
-    }
-
-    @POST
-    @Path("authenticate")
-    @Produces("application/json")
-    public Response authenticate(UserPassword patientBean)
-    {
-        logger.warn("authenticate " + patientBean);
-
-        return Response.accepted()
                        .type(MediaType.APPLICATION_JSON)
                        .build();
     }
