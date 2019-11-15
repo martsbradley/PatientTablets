@@ -31,9 +31,12 @@ public class JsonWebTokenAuthFilter implements ContainerRequestFilter {
     @Context ResourceInfo resourceInfo;
     private String auth0Issuer;
 
-    @Inject JWTFactory jwtFactory;
+    private JWTFactory jwtFactory;
     private JsonWebTokenVerifier verifier;
 
+    JsonWebTokenAuthFilter() {
+        jwtFactory = new JWTFactory();
+    }
 
     @Context
     public void setServletContext(ServletContext aContext) throws JwkException {

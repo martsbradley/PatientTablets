@@ -85,48 +85,9 @@
                     <trimStackTrace>false</trimStackTrace>
                       <!--    <argLine>-Xmx256M</argLine> -->
                       <argLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/1.38/jmockit-1.38.jar</argLine>
-                      <!--
                        <environmentVariables>
-                         <var1>val1</var1>
-
-
-LETS_ENCRYPT_KEYSTORE_PATH=keys/mykeystore.pkcs12
-LETS_ENCRYPT_KEYSTORE_ALIAS=myalias
-LETS_ENCRYPT_KEYSTORE_PASSWORD=bradley
-POSTGRES_HOST=db
-POSTGRES_DB=pgdatabase
-POSTGRES_USER=pguser
-POSTGRES_PASSWORD=pguser1
-
-AUTH0_AUDIENCE=https://localhost/firstcup/hospital/rest
-AUTH0_CALLBACK_URL=https://localhost:3000/auth0callback
-AUTH0_CLIENTID=H2TnMfxAfn9cM13kXdYn6KPp783HbKrJ
-AUTH0_CLIENTSECRET=A_Clg87v2XzLANLG2ta_sClCm-XzhrKg2Q8R2-F2zzMqeu2AJP9Gx1FXIBCPFyIK
-AUTH0_DOMAIN=developmentreactgorti.eu.auth0.com
-AUTH0_ISSUER=https://developmentreactgorti.eu.auth0.com
-AUTH0_URL=https://developmentreactgorti.eu.auth0.com/
-AUTH0_LOGIN_FAILURE=https://localhost:3000/loginfailure
-AUTH0_LOGIN_SUCCESS=https://localhost:3000/loginsuccess
-AUTH0_LOGOUT_SUCCESS=https://localhost:3000/logoutsuccess
-AUTH0_NAMESPACE=https://gorticrum.com/user_authorization
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                          <AUTH0_ISSUER>https://developmentreactgorti.eu.auth0.com</AUTH0_ISSUER>
                        </environmentVariables>
-                      -->
                 </configuration>
                 <dependencies>
                     <dependency>

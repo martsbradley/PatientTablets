@@ -4,7 +4,6 @@ import martinbradley.hospital.core.domain.password.AuthGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.Model;
 import java.io.FileInputStream;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -15,7 +14,6 @@ import java.util.Set;
 
 //  This is the high level class for creating a JWT
 //  Handling the RSA signature
-@Model
 public class JWTFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(JWTFactory.class);
@@ -43,7 +41,7 @@ public class JWTFactory {
         return keyPair;
     }
 
-    private KeyPair getKeyPair(String keyStorePath, char[] keyStorePassword) {
+    public KeyPair getKeyPair(String keyStorePath, char[] keyStorePassword) {
 
         logger.info("Starting");
 
@@ -78,10 +76,6 @@ public class JWTFactory {
             logger.warn("Issue was ", e);
             throw new RuntimeException("Unable to load keystore from " + keyStorePath);
         }
-    }
-
-    public String signedJWT(Set<AuthGroup> groups) {
-        return "";
     }
 
     public JsonWebToken createJWT(Set<AuthGroup> groups) throws Exception {

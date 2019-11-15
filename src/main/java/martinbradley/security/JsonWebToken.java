@@ -63,6 +63,10 @@ public class JsonWebToken {
         return strPayload;
     }
 
+    /**
+     * This method delivers the final product.
+     * @return
+     */
     @Override
     public String toString() {
         return jwtAuthTokenValue;

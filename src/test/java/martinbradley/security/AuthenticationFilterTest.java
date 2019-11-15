@@ -1,4 +1,4 @@
-package martinbradley.auth0;
+package martinbradley.security;
 
 import java.io.IOException;
 import javax.servlet.ServletContext;
@@ -6,8 +6,6 @@ import javax.servlet.ServletException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.HttpHeaders;
 
-import martinbradley.security.Auth0RSASolution;
-import martinbradley.security.SecuredRestfulMethodHelper;
 import mockit.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,12 +21,16 @@ import javax.ws.rs.core.Cookie;
 
 public class AuthenticationFilterTest {
     private static Logger logger = LoggerFactory.getLogger(AuthenticationFilterTest.class);
-    AuthenticationFilter impl = new AuthenticationFilter();
+    JsonWebTokenAuthFilter impl = new JsonWebTokenAuthFilter();
     @Mocked ContainerRequestContext requestContext;
     @Mocked ServletContext servletContext;
     @Mocked ResourceInfo resourceInfo;
-    @Mocked
-    Auth0RSASolution auth0;
+    @Mocked JsonWebTokenVerifier verifier;
+
+    @Mocked JWTFactory jwtFactory;
+
+    //@Mocked -ea -javaagent:/home/martin/.m2/repository/org/jmockit/jmockit/1.38/jmockit-1.38.jar
+
     @Mocked
     SecuredRestfulMethodHelper helper;
 
@@ -42,7 +44,7 @@ public class AuthenticationFilterTest {
         throws IOException, ServletException {
         new Expectations() {{
 
-            auth0.isValidAccessRequest(anyString, anyString, (String[])any);
+            verifier.isValidAccessRequest(anyString, anyString, (String[])any);
             result = authResult;
         }};
     }
@@ -100,7 +102,7 @@ public class AuthenticationFilterTest {
     }
 
     @Test
-    public void testSuccessfulWithCookie() 
+    public void testSuccessfulWithCookie()
         throws Exception {
 
         expectCookeJWT("123");
@@ -120,7 +122,7 @@ public class AuthenticationFilterTest {
     }
 
     @Test
-    public void testFailed_NoGroups() 
+    public void testFailed_NoGroups()
         throws Exception {
 
         expectBearerToken("123");
@@ -132,7 +134,7 @@ public class AuthenticationFilterTest {
         impl.filter(requestContext);
     }
     @Test
-    public void testFailed_NotAuthorized() 
+    public void testFailed_NotAuthorized()
         throws Exception {
 
         expectBearerToken("123");
@@ -147,7 +149,7 @@ public class AuthenticationFilterTest {
     }
 
     @Test
-    public void testFailed_NoToken() 
+    public void testFailed_NoToken()
         throws Exception {
 
         timesAbortCalled(1);

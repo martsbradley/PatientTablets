@@ -1,4 +1,4 @@
-package martinbradley.auth0;
+package martinbradley.security;
 
 import martinbradley.security.JWTFactory;
 import org.junit.jupiter.api.Test;
@@ -93,10 +93,11 @@ public class Auth0VerifierTest {
         return time.atZone(ZoneId.systemDefault()).toEpochSecond();
     }
 
-    private Auth0Verifier createVerifier() {
+    private JsonWebTokenVerifier createVerifier() {
         RSAPublicKey pub = (RSAPublicKey)keyPair.getPublic();
 
-        Auth0Verifier auth = new Auth0Verifier(issuer, pub);
+        JsonWebTokenVerifier auth = new JsonWebTokenVerifier(issuer, keyPair.getPublic());
+
         return auth;
     }
 
@@ -109,7 +110,7 @@ public class Auth0VerifierTest {
 
         RSAPublicKey pub = (RSAPublicKey)keyPair.getPublic();
 
-        Auth0Verifier auth = new Auth0Verifier(aIssuer, pub);
+        JsonWebTokenVerifier auth = new JsonWebTokenVerifier(issuer, keyPair.getPublic());
         boolean isValid = auth.validTokenHasScopes(validJWT.toString(), aScopes);
         assertThat(isValid, is(expectedResult));
     }
@@ -118,7 +119,7 @@ public class Auth0VerifierTest {
     public void testExpiredJwt() throws Exception {
         JsonWebToken validJWT = createExpiredJWT();
 
-        Auth0Verifier auth = createVerifier();
+        JsonWebTokenVerifier auth = createVerifier();
         boolean isValid = auth.validTokenHasScopes(validJWT.toString(), "read:patients");
         assertThat(isValid, is(false));
     }
@@ -134,7 +135,7 @@ public class Auth0VerifierTest {
     public void tokenIsValid() throws Exception {
         JsonWebToken validJWT = createValidJWT();
 
-        Auth0Verifier auth = createVerifier();
+        JsonWebTokenVerifier auth = createVerifier();
 
         boolean isValid = auth.tokenIsValid(validJWT.toString());
         assertThat(isValid, is(true));
@@ -144,7 +145,7 @@ public class Auth0VerifierTest {
     public void tokenIsNotValid() throws Exception {
         String invalidJWT = "This not a valid token";
 
-        Auth0Verifier auth = createVerifier();
+        JsonWebTokenVerifier auth = createVerifier();
 
         boolean isValid = auth.tokenIsValid(invalidJWT);
         assertThat(isValid, is(false));
@@ -157,7 +158,7 @@ public class Auth0VerifierTest {
 
         JsonWebToken validJWT = createJWT();
 
-        Auth0Verifier auth = createVerifier();
+        JsonWebTokenVerifier auth = createVerifier();
         boolean isValid = auth.isValidAccessRequest(validJWT.toString(), "namespace", "admin");
         assertThat(isValid, is(true));
     }
@@ -169,7 +170,7 @@ public class Auth0VerifierTest {
 
         JsonWebToken validJWT = createJWT();
 
-        Auth0Verifier auth = createVerifier();
+        JsonWebTokenVerifier auth = createVerifier();
         boolean isValid = auth.isValidAccessRequest(validJWT.toString(), "namespace", "admin");
         assertThat(isValid, is(false));
     }
@@ -180,7 +181,7 @@ public class Auth0VerifierTest {
 
         JsonWebToken validJWT = createJWT();
 
-        Auth0Verifier auth = createVerifier();
+        JsonWebTokenVerifier auth = createVerifier();
                                        // Missing the groups on the request
         boolean isValid = auth.isValidAccessRequest(validJWT.toString(), "namespace");
         assertThat(isValid, is(false));
@@ -212,7 +213,7 @@ public class Auth0VerifierTest {
 
         JsonWebToken validJWT = createJWT();
 
-        Auth0Verifier auth = createVerifier();
+        JsonWebTokenVerifier auth = createVerifier();
         Set<String> groups = auth.readGroups(validJWT.toString(), "namespace");
         assertThat(groups.size(), is(1));
         assertThat(groups.contains("admin"), is(true));
@@ -222,7 +223,7 @@ public class Auth0VerifierTest {
 
         JsonWebToken validJWT = createJWT();
 
-        Auth0Verifier auth = createVerifier();
+        JsonWebTokenVerifier auth = createVerifier();
         Set<String> groups = auth.readGroups(validJWT.toString(), "namespace");
         assertThat(groups.size(), is(0));
     }
@@ -232,7 +233,7 @@ public class Auth0VerifierTest {
         builder.setGroups("namespace", "admin","controllers", "wasters");
         JsonWebToken validJWT = createJWT();
 
-        Auth0Verifier auth = createVerifier();
+        JsonWebTokenVerifier auth = createVerifier();
         Set<String> groups = auth.readGroups(validJWT.toString(), "namespace");
 
         assertThat(groups.size(), is(3));
@@ -247,7 +248,7 @@ public class Auth0VerifierTest {
                 () -> {
             String inValidJWT = "This not a valid token";
 
-            Auth0Verifier auth = createVerifier();
+            JsonWebTokenVerifier auth = createVerifier();
             Set<String> groups = auth.readGroups(inValidJWT, "namespace");
         });
     }
