@@ -1,4 +1,5 @@
 package martinbradley.auth0;
+import martinbradley.security.SecuredRestfulMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.ws.rs.container.ResourceInfo;

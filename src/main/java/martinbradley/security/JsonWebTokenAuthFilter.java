@@ -1,30 +1,29 @@
-package martinbradley.auth0;
+package martinbradley.security;
 
-import javax.annotation.Priority;
+import com.auth0.jwk.JwkException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Priority;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.Context;
-import com.auth0.jwk.JwkException;
-import javax.ws.rs.container.ResourceInfo;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Map;
 
 @SecuredRestfulMethod
 @Provider
 @Priority(Priorities.AUTHENTICATION)
-public class AuthenticationFilter implements ContainerRequestFilter {
+public class JsonWebTokenAuthFilter implements ContainerRequestFilter {
 
-    private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
+    private static Logger logger = LoggerFactory.getLogger(JsonWebTokenAuthFilter.class);
     private static final String REALM = "example";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
     private Auth0RSASolution auth0RSA;
@@ -98,7 +97,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     private String getHeaderAuthToken(ContainerRequestContext requestContext) {
         String authorizationHeader =
                 requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-
 
         if (!isTokenBasedAuthentication(authorizationHeader)) {
             logger.warn("JWT token not in header.");

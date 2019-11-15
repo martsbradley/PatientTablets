@@ -1,32 +1,27 @@
-package martinbradley.auth0;
+package martinbradley.security;
 
-import java.security.interfaces.RSAPublicKey;
-import java.security.interfaces.RSAPrivateKey;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.security.PublicKey;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.Iterator;
-import com.auth0.jwt.interfaces.Claim;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.*;
+
 import static java.util.stream.Collectors.toSet;
-import org.json.*;
 
-public class Auth0Verifier {
+public class JsonWebTokenVerifier {
     private final JWTVerifier verifier;
-    private static Logger logger = LoggerFactory.getLogger(Auth0Verifier.class);
+    private static Logger logger = LoggerFactory.getLogger(JsonWebTokenVerifier.class);
 
-    public Auth0Verifier(String aIssuer,
-                         PublicKey aPublicKey) {
+    public JsonWebTokenVerifier(String aIssuer,
+                                PublicKey aPublicKey) {
 
         RSAPrivateKey privateKey = null;// Not needed, here we only verify tokens.
 
