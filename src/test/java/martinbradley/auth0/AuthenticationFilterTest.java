@@ -1,16 +1,13 @@
 package martinbradley.auth0;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import javax.servlet.*;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
-import javax.servlet.http.*;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.HttpHeaders;
-import martinbradley.auth0.*;
+
+import martinbradley.security.Auth0RSASolution;
+import martinbradley.security.SecuredRestfulMethodHelper;
 import mockit.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +27,10 @@ public class AuthenticationFilterTest {
     @Mocked ContainerRequestContext requestContext;
     @Mocked ServletContext servletContext;
     @Mocked ResourceInfo resourceInfo;
-    @Mocked Auth0RSASolution auth0;
-    @Mocked SecuredRestfulMethodHelper helper;
+    @Mocked
+    Auth0RSASolution auth0;
+    @Mocked
+    SecuredRestfulMethodHelper helper;
 
     @BeforeEach
     public void setMeUp() throws Exception {

@@ -1,4 +1,4 @@
-package martinbradley.auth0;
+package martinbradley.security;
 import martinbradley.security.SecuredRestfulMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

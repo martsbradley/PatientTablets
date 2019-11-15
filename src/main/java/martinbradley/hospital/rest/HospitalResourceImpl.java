@@ -17,8 +17,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
@@ -29,19 +27,15 @@ import martinbradley.hospital.core.beans.PageInfo;
 import static martinbradley.hospital.core.beans.PageInfo.PageInfoBuilder;
 import java.util.List;
 import java.util.Set;
-import java.util.ArrayList;
 import javax.ws.rs.core.GenericEntity;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.Context;
-import javax.servlet.http.HttpServletRequest;
 
 import martinbradley.hospital.core.api.dto.MessageCollection;
 import martinbradley.hospital.core.api.dto.Message;
-import martinbradley.auth0.SecuredRestfulMethod;
+import martinbradley.security.SecuredRestfulMethod;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 @Path("/hospital")

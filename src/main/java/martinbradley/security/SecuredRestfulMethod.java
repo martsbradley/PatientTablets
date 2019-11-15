@@ -1,4 +1,4 @@
-package martinbradley.auth0;
+package martinbradley.security;
 
 import javax.ws.rs.NameBinding;
 import java.lang.annotation.Retention;

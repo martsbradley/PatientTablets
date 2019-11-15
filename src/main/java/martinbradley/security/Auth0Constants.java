@@ -1,4 +1,4 @@
-package martinbradley.auth0;
+package martinbradley.security;
 
 import java.util.Map;
 

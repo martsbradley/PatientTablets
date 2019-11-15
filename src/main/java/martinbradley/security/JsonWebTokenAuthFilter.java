@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -26,20 +27,19 @@ public class JsonWebTokenAuthFilter implements ContainerRequestFilter {
     private static Logger logger = LoggerFactory.getLogger(JsonWebTokenAuthFilter.class);
     private static final String REALM = "example";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
-    private Auth0RSASolution auth0RSA;
-    private final String AUTH0_URL    = "AUTH0_URL";
     private final String AUTH0_ISSUER = "AUTH0_ISSUER";
     @Context ResourceInfo resourceInfo;
     private String auth0Issuer;
 
+    @Inject JWTFactory jwtFactory;
+    private JsonWebTokenVerifier verifier;
+
+
     @Context
     public void setServletContext(ServletContext aContext) throws JwkException {
-
-        String auth0URL = Auth0Constants.AUTH0_URL.getValue();
         auth0Issuer     = Auth0Constants.AUTH0_ISSUER.getValue();
-        logger.warn("auth0URL    : " + auth0URL);
-        logger.warn("auth0Issuer : " + auth0Issuer);
-        auth0RSA = new Auth0RSASolution(auth0URL, auth0Issuer);
+        logger.warn("Auth Issuer : " + auth0Issuer);
+        verifier = new JsonWebTokenVerifier(auth0Issuer, jwtFactory.getPublicKey());
     }
 
     @Override
@@ -133,12 +133,11 @@ public class JsonWebTokenAuthFilter implements ContainerRequestFilter {
     }
 
     private boolean validateToken(String token) throws Exception {
-        SecuredRestfulMethodHelper helper = new
-                                        SecuredRestfulMethodHelper();
+        SecuredRestfulMethodHelper helper = new SecuredRestfulMethodHelper();
 
         String[] requiredGroups = helper.getGroups(resourceInfo);
 
-        boolean isValid = auth0RSA.isValidAccessRequest(token, 
+        boolean isValid = verifier.isValidAccessRequest(token,
                 "https://gorticrum.com/user_authorization",
                                                            requiredGroups);
         logger.warn("Valid token ?" + isValid);

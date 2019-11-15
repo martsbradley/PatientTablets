@@ -30,6 +30,10 @@ public class JWTFactory {
         keyPair = loadKeyStore();
     }
 
+    public PublicKey getPublicKey() {
+        return keyPair.getPublic();
+    }
+
     private KeyPair loadKeyStore() {
         // FROM ENVIRONMENT ...
         String keyStorePath = "/home/martin/Software/Security/JavaKeytool/examplestore";
@@ -39,7 +43,7 @@ public class JWTFactory {
         return keyPair;
     }
 
-    public KeyPair getKeyPair(String keyStorePath, char[] keyStorePassword) {
+    private KeyPair getKeyPair(String keyStorePath, char[] keyStorePassword) {
 
         logger.info("Starting");
 
