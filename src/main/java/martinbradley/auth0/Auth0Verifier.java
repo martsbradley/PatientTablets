@@ -165,7 +165,7 @@ public class Auth0Verifier {
                 return false;
             }
             logger.debug("Checking token :" + token);
-            DecodedJWT jwt = verifier.verify(token);
+            DecodedJWT jwt = verifier.verify(token.toString());
             
             logger.debug("Decoded successfully");
 

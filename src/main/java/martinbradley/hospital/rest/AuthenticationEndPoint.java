@@ -2,17 +2,14 @@ package martinbradley.hospital.rest;
 
 import martinbradley.hospital.core.beans.UserPassword;
 import martinbradley.hospital.web.api.AuthenticationHandler;
-import martinbradley.hospital.web.api.PatientHandler;
-import martinbradley.security.JWTString;
+import martinbradley.security.JsonWebToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.naming.AuthenticationException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Set;
 
 @Path("/authenticate")
 public class AuthenticationEndPoint
@@ -31,7 +28,7 @@ public class AuthenticationEndPoint
 
         // needs to check the database and create a JWT token if the user is valid.
         try {
-            JWTString token = authenticationHandler.authenticate(userDetails);
+            JsonWebToken token = authenticationHandler.authenticate(userDetails);
         }
         catch (Exception e) {
             //denied.

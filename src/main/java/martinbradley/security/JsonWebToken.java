@@ -1,21 +1,25 @@
 package martinbradley.security;
-import java.util.StringJoiner;
-import java.util.Arrays;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.util.Base64;
+
 import org.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class JWTString {
+public class JsonWebToken {
     private final String issuer;
     private final long iat;
     private final long exp;
     private final String scope;
     private final String namespace;
-    private final String[] groups;  
-    private static final Logger logger = LoggerFactory.getLogger(JWTString.class);
+    private final String[] groups;
+    private static final Logger logger = LoggerFactory.getLogger(JsonWebToken.class);
+    private String jwtAuthTokenValue = "";
 
-    private JWTString(Builder aBuilder) {
+    private JsonWebToken(Builder aBuilder) {
         issuer    = aBuilder.issuer;
         iat       = aBuilder.iat;
         exp       = aBuilder.exp;
@@ -59,6 +63,63 @@ public class JWTString {
         return strPayload;
     }
 
+    @Override
+    public String toString() {
+        return jwtAuthTokenValue;
+    }
+
+    public void sign(KeyPair keyPair) throws Exception {
+
+        String header =  getHeader();
+        String payload = getPayload();
+
+        logger.info("header is  "+ header);
+        logger.info("payload is  "+ payload);
+
+
+        String encodedHeader  = base64Encode(header);
+        String encodedPayload = base64Encode(payload);
+
+        String toBeSigned = encodedHeader + "." + encodedPayload;
+        String signature = signIt(keyPair, toBeSigned);
+        this.jwtAuthTokenValue = toBeSigned + "." + signature;
+
+        logger.debug("Result is "+ this.jwtAuthTokenValue);
+    }
+
+    private String signIt(KeyPair keyPair, String aToBeSigned)
+            throws Exception {
+        try {
+            Signature signer = Signature.getInstance("SHA256withRSA");
+
+            signer.initSign(keyPair.getPrivate());
+            signer.update(aToBeSigned.getBytes());
+            byte[] signedBytes = signer.sign();
+
+            Base64.Encoder encoder = Base64.getEncoder();
+            byte[] encodedBytes = encoder.encode(signedBytes);
+
+            String signature = new String(encodedBytes);
+            return signature;
+        } catch (NoSuchAlgorithmException e) {
+            logger.warn("No such signature", e);
+            throw e;
+        }
+        catch (Exception e) {
+            logger.warn("Error ", e);
+            throw e;
+        }
+    }
+
+    private String base64Encode(String aInput) {
+        Base64.Encoder encoder = Base64.getEncoder();
+
+        byte[] encodedBytes = encoder.encode(aInput.getBytes());
+
+        String output = new String(encodedBytes);
+        return output;
+    }
+
     public static class Builder {
         String issuer;
         long iat;
@@ -88,8 +149,8 @@ public class JWTString {
             this.groups = groups;
             return this;
         }
-        public JWTString build(){
-            return new JWTString(this);
+        public JsonWebToken build(){
+            return new JsonWebToken(this);
         }
     }
 }

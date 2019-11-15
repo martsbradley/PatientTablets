@@ -1,36 +1,33 @@
 package martinbradley.auth0;
 
+import martinbradley.security.JWTFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.security.KeyPair;
 import java.security.interfaces.RSAPublicKey;
-
-import martinbradley.auth0.Auth0Verifier;
-import java.util.StringJoiner;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import martinbradley.security.JWTString;
-import martinbradley.security.JWTSigner;
-import martinbradley.security.RSASigner;
+import martinbradley.security.JsonWebToken;
 
 public class Auth0VerifierTest {
     private static final Logger logger = LoggerFactory.getLogger(Auth0VerifierTest.class);
     final KeyPair keyPair;
     final String issuer = "https://myeducation.eu.auth0.com/";
-    JWTString.Builder builder;
+    JsonWebToken.Builder builder;
 
     Auth0VerifierTest() throws Exception {
-        keyPair = new RSASigner().getKeyPair();
+
+        String keyStorePath = "/home/martin/Software/Security/JavaKeytool/examplestore";
+        char [] keyStorePassword = "abcdef".toCharArray();
+
+        JWTFactory factory = new JWTFactory();
+        keyPair = factory.getKeyPair(keyStorePath,keyStorePassword);
     }
 
     @BeforeEach
@@ -40,7 +37,7 @@ public class Auth0VerifierTest {
 
     /* Creates a build tht by default will build
      * a valid JWT token */
-    private JWTString.Builder createBuilder() {
+    private JsonWebToken.Builder createBuilder() {
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime hourBefore = now.minusHours(1);
@@ -50,7 +47,7 @@ public class Auth0VerifierTest {
         long expires  = toSinceEpoch(hourAfter);
         System.out.println("Issued at " + issuedAt);
 
-        builder = new JWTString.Builder();
+        builder = new JsonWebToken.Builder();
         builder.setIssuer(issuer)
                .setIat(issuedAt)
                .setExp(expires)
@@ -58,23 +55,19 @@ public class Auth0VerifierTest {
         return builder;
     }
 
-    private String createJWT() throws Exception {
+    private JsonWebToken createJWT() throws Exception {
 
-        JWTString jwtString = builder.build();
-        String header = jwtString.getHeader();
+        JsonWebToken jsonWebToken = builder.build();
+        String header = jsonWebToken.getHeader();
         logger.info("Header is " + header);
-        String payload = jwtString.getPayload();
+        String payload = jsonWebToken.getPayload();
         logger.info("Payload is " + payload);
 
-        JWTSigner signer = new JWTSigner(keyPair);
-        signer.setHeader(header);
-        signer.setPayload(payload);
-
-        String jwt = signer.createSignedJWT();
-        return jwt;
+        jsonWebToken.sign(keyPair);
+        return jsonWebToken;
     }
 
-    private String createExpiredJWT() throws Exception {
+    private JsonWebToken createExpiredJWT() throws Exception {
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime hourBefore = now.minusHours(100);
@@ -91,7 +84,7 @@ public class Auth0VerifierTest {
     }
 
 
-    private String createValidJWT() throws Exception {
+    private JsonWebToken createValidJWT() throws Exception {
 
         return createJWT();
     }
@@ -112,21 +105,21 @@ public class Auth0VerifierTest {
                           String ...aScopes) 
         throws Exception {
 
-        String validJWT = createValidJWT();
+        JsonWebToken validJWT = createValidJWT();
 
         RSAPublicKey pub = (RSAPublicKey)keyPair.getPublic();
 
         Auth0Verifier auth = new Auth0Verifier(aIssuer, pub);
-        boolean isValid = auth.validTokenHasScopes(validJWT, aScopes);
+        boolean isValid = auth.validTokenHasScopes(validJWT.toString(), aScopes);
         assertThat(isValid, is(expectedResult));
     }
 
     @Test
     public void testExpiredJwt() throws Exception {
-        String validJWT = createExpiredJWT();
+        JsonWebToken validJWT = createExpiredJWT();
 
         Auth0Verifier auth = createVerifier();
-        boolean isValid = auth.validTokenHasScopes(validJWT, "read:patients");
+        boolean isValid = auth.validTokenHasScopes(validJWT.toString(), "read:patients");
         assertThat(isValid, is(false));
     }
 
@@ -139,11 +132,11 @@ public class Auth0VerifierTest {
 
     @Test
     public void tokenIsValid() throws Exception {
-        String validJWT = createValidJWT();
+        JsonWebToken validJWT = createValidJWT();
 
         Auth0Verifier auth = createVerifier();
 
-        boolean isValid = auth.tokenIsValid(validJWT);
+        boolean isValid = auth.tokenIsValid(validJWT.toString());
         assertThat(isValid, is(true));
     }
 
@@ -162,10 +155,10 @@ public class Auth0VerifierTest {
 
         builder.setGroups("namespace", "admin");
 
-        String validJWT = createJWT();
+        JsonWebToken validJWT = createJWT();
 
         Auth0Verifier auth = createVerifier();
-        boolean isValid = auth.isValidAccessRequest(validJWT, "namespace", "admin");
+        boolean isValid = auth.isValidAccessRequest(validJWT.toString(), "namespace", "admin");
         assertThat(isValid, is(true));
     }
 
@@ -174,10 +167,10 @@ public class Auth0VerifierTest {
 
         builder.setGroups("namespace", "non-admin");
 
-        String validJWT = createJWT();
+        JsonWebToken validJWT = createJWT();
 
         Auth0Verifier auth = createVerifier();
-        boolean isValid = auth.isValidAccessRequest(validJWT, "namespace", "admin");
+        boolean isValid = auth.isValidAccessRequest(validJWT.toString(), "namespace", "admin");
         assertThat(isValid, is(false));
     }
     @Test
@@ -185,11 +178,11 @@ public class Auth0VerifierTest {
 
         builder.setGroups("namespace", "normal");
 
-        String validJWT = createJWT();
+        JsonWebToken validJWT = createJWT();
 
         Auth0Verifier auth = createVerifier();
                                        // Missing the groups on the request
-        boolean isValid = auth.isValidAccessRequest(validJWT, "namespace");
+        boolean isValid = auth.isValidAccessRequest(validJWT.toString(), "namespace");
         assertThat(isValid, is(false));
     }
 
@@ -217,30 +210,30 @@ public class Auth0VerifierTest {
     public void testReadGroups() throws Exception {
         builder.setGroups("namespace", "admin");
 
-        String validJWT = createJWT();
+        JsonWebToken validJWT = createJWT();
 
         Auth0Verifier auth = createVerifier();
-        Set<String> groups = auth.readGroups(validJWT, "namespace");
+        Set<String> groups = auth.readGroups(validJWT.toString(), "namespace");
         assertThat(groups.size(), is(1));
         assertThat(groups.contains("admin"), is(true));
     }
     @Test
     public void testReadNoGroups() throws Exception {
 
-        String validJWT = createJWT();
+        JsonWebToken validJWT = createJWT();
 
         Auth0Verifier auth = createVerifier();
-        Set<String> groups = auth.readGroups(validJWT, "namespace");
+        Set<String> groups = auth.readGroups(validJWT.toString(), "namespace");
         assertThat(groups.size(), is(0));
     }
     @Test
     public void testReadThreeGroups() throws Exception {
 
         builder.setGroups("namespace", "admin","controllers", "wasters");
-        String validJWT = createJWT();
+        JsonWebToken validJWT = createJWT();
 
         Auth0Verifier auth = createVerifier();
-        Set<String> groups = auth.readGroups(validJWT, "namespace");
+        Set<String> groups = auth.readGroups(validJWT.toString(), "namespace");
 
         assertThat(groups.size(), is(3));
         assertThat(groups.contains("admin"),       is(true));

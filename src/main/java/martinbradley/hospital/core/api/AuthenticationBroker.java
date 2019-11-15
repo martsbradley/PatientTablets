@@ -1,9 +1,9 @@
 package martinbradley.hospital.core.api;
 
-import martinbradley.security.JWTString;
+import martinbradley.security.JsonWebToken;
 
 import javax.naming.AuthenticationException;
 
 public interface AuthenticationBroker {
-    JWTString authenticate(String userName, String password) throws AuthenticationException;
+    JsonWebToken authenticate(String userName, String password) throws AuthenticationException;
 }

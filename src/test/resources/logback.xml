@@ -8,8 +8,7 @@
   <logger name="org" level="INFO"/>
   <logger name="org.hibernate" level="INFO"/>
   <logger name="org.hibernate.SQL" level="DEBUG"/>
-  <logger name="martinbradley.security.JWTString" level="WARN"/>
-  <logger name="martinbradley.security.JWTSigner" level="WARN"/>
+  <logger name="martinbradley.security.JsonWebToken" level="WARN"/>
 
   <root level="DEBUG">
     <appender-ref ref="STDOUT" />

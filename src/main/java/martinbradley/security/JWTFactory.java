@@ -1,6 +1,5 @@
 package martinbradley.security;
 
-import com.auth0.jwt.JWT;
 import martinbradley.hospital.core.domain.password.AuthGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,15 +80,15 @@ public class JWTFactory {
         return "";
     }
 
-    public JWTString createJWT(Set<AuthGroup> groups) throws Exception {
+    public JsonWebToken createJWT(Set<AuthGroup> groups) throws Exception {
 
-        JWTString jwt = buildJWT(groups);
+        JsonWebToken jwt = buildJWT(groups);
 
         return jwt;
     }
 
-    private JWTString buildJWT(Set<AuthGroup> groups) throws Exception {
-        JWTString.Builder builder = new JWTString.Builder();
+    private JsonWebToken buildJWT(Set<AuthGroup> groups) throws Exception {
+        JsonWebToken.Builder builder = new JsonWebToken.Builder();
 
         builder.setIssuer(issuer);
 
@@ -110,7 +109,7 @@ public class JWTFactory {
         builder.setIat(issuedAt);
         builder.setExp(expires);
 
-        JWTString jwt = builder.build();
+        JsonWebToken jwt = builder.build();
         jwt.sign(keyPair);
         return jwt;
     }

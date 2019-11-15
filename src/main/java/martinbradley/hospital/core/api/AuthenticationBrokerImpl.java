@@ -4,7 +4,10 @@ import martinbradley.hospital.core.domain.password.AuthGroup;
 import martinbradley.hospital.core.domain.password.Salt;
 import martinbradley.hospital.persistence.repository.AuthUserGroupRepo;
 import martinbradley.password.PasswordHelper;
-import martinbradley.security.JWTString;
+import martinbradley.security.JWTFactory;
+import martinbradley.security.JsonWebToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Model;
 import javax.inject.Inject;
@@ -14,11 +17,16 @@ import java.util.Set;
 @Model
 public class AuthenticationBrokerImpl implements AuthenticationBroker
 {
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationBrokerImpl.class);
+
     @Inject
     AuthUserGroupRepo userRepo;
 
+    @Inject
+    JWTFactory jwtFactory;
+
     @Override
-    public JWTString authenticate(String userName, String password) throws AuthenticationException {
+    public JsonWebToken authenticate(String userName, String password) throws AuthenticationException {
         // Lookup the database with the user and get the salt.
         // SHA 2 ( salt + the password)
         // Select the groups from the database that have that user and that hash.
@@ -31,8 +39,13 @@ public class AuthenticationBrokerImpl implements AuthenticationBroker
 
         Set<AuthGroup> groups = userRepo.authenticate(userName, hashedPassword);
 
-        passwordHelper.hashPassword("marty", "bradley");
-
-        return null;
+        JsonWebToken jwt = null;
+        try {
+            jwt = jwtFactory.createJWT(groups);
+        } catch (Exception e) {
+            logger.warn("Failed to create JWT");
+            throw new AuthenticationException(e.getMessage());
+        }
+        return jwt;
     }
 }

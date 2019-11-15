@@ -1,11 +1,8 @@
 package martinbradley.hospital.core.api;
 
-import martinbradley.hospital.core.beans.PageInfo;
-import martinbradley.hospital.core.domain.Medicine;
 import martinbradley.hospital.core.domain.password.AuthGroup;
 import martinbradley.hospital.persistence.repository.AuthUserGroupRepo;
-import martinbradley.hospital.persistence.repository.MedicineDBRepo;
-import martinbradley.security.JWTString;
+import martinbradley.security.JsonWebToken;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
@@ -19,7 +16,6 @@ import javax.naming.AuthenticationException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static martinbradley.hospital.core.beans.PageInfo.PageInfoBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -101,7 +97,7 @@ public class AuthenticationBrokerImplTest
         foundUserSalt("ABC");
         passwordCheckPasses();
         try {
-            JWTString str = impl.authenticate("badUsername", "anything");
+            JsonWebToken str = impl.authenticate("badUsername", "anything");
             logger.info(str.toString());
         } catch (AuthenticationException e) {
             fail("Should not reach here.");
