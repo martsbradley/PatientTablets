@@ -19,11 +19,9 @@ public class AuthenticationBrokerImpl implements AuthenticationBroker
 {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationBrokerImpl.class);
 
-    @Inject
-    AuthUserGroupRepo userRepo;
+    @Inject AuthUserGroupRepo userRepo;
 
-    @Inject
-    JWTFactory jwtFactory;
+    @Inject JWTFactory jwtFactory;
 
     @Override
     public JsonWebToken authenticate(String userName, String password) throws AuthenticationException {

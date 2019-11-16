@@ -1,11 +1,12 @@
 package martinbradley.hospital.core.api;
 
 import martinbradley.hospital.core.domain.password.AuthGroup;
+import martinbradley.hospital.core.domain.password.Salt;
 import martinbradley.hospital.persistence.repository.AuthUserGroupRepo;
+import martinbradley.security.JWTFactory;
 import martinbradley.security.JsonWebToken;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
+import mockit.*;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -25,15 +26,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class AuthenticationBrokerImplTest
 {
-    @Mocked AuthUserGroupRepo mockRepo;
-    private AuthenticationBrokerImpl impl= new AuthenticationBrokerImpl();
+    @Injectable AuthUserGroupRepo mockRepo;
+    @Injectable JWTFactory jwtFactory;
+    @Tested AuthenticationBrokerImpl impl;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationBrokerImplTest.class);
 
-    @BeforeEach
-    public void setMeUp()
-    {
-        impl.userRepo = mockRepo;
-    }
     private void failedGetSalt() throws AuthenticationException {
         new Expectations(){{
             mockRepo.getUserSalt(anyString);
@@ -41,10 +38,10 @@ public class AuthenticationBrokerImplTest
         }};
     }
 
-    private void foundUserSalt(final String aSalt) throws AuthenticationException {
+    public void foundUserSalt(final String aSalt) throws AuthenticationException {
         new Expectations() {{
             mockRepo.getUserSalt(anyString);
-            result = aSalt;
+            result = new Salt("BAD change this");
         }};
     }
 
@@ -82,25 +79,25 @@ public class AuthenticationBrokerImplTest
         }};
     }
 
-    @Test
-    public void userPasswordIncorrect() throws AuthenticationException {
-        foundUserSalt("ABC");
-        passwordCheckFails();
-        try {
-            impl.authenticate("badUsername", "anything");
-            fail("Should not reach here.");
-        } catch (AuthenticationException e) { }
-    }
+  @Test
+  public void userPasswordIncorrect() throws AuthenticationException {
+      foundUserSalt("ABC");
+      passwordCheckFails();
+      try {
+          impl.authenticate("badUsername", "anything");
+          fail("Should not reach here.");
+      } catch (AuthenticationException e) { }
+  }
 
-    @Test
-    public void userPasswordCorrect() throws AuthenticationException {
-        foundUserSalt("ABC");
-        passwordCheckPasses();
-        try {
-            JsonWebToken str = impl.authenticate("badUsername", "anything");
-            logger.info(str.toString());
-        } catch (AuthenticationException e) {
-            fail("Should not reach here.");
+      @Test
+      public void userPasswordCorrect() throws AuthenticationException {
+          foundUserSalt("ABC");
+          passwordCheckPasses();
+          try {
+              JsonWebToken str = impl.authenticate("badUsername", "anything");
+              logger.info(str.toString());
+          } catch (AuthenticationException e) {
+              fail("Should not reach here.");
         }
     }
 

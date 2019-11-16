@@ -24,23 +24,23 @@ public class MedicineDBRepoTest
     @Injectable UserTransaction tx;
     @Tested MedicineDBRepo impl;
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void getTotalMedicines_PassedNull(@Mocked TypedQuery<Long> query)
-    {
-        new Expectations(){{
-            query.getSingleResult(); result = 0;
-        }};
+  //@Test
+  //@SuppressWarnings("unchecked")
+  //public void getTotalMedicines_PassedNull(@Mocked TypedQuery<Long> query)
+  //{
+  //    new Expectations(){{
+  //        query.getSingleResult(); result = 0;
+  //    }};
 
-        impl.getTotalMedicines(null);
-    }
+  //    impl.getTotalMedicines(null);
+  //}
 
-    @Test
-    public void pageMedicines_null_filter(@Mocked TypedQuery<Long> query,
-                                          @Mocked Medicine.SortOrder order)
-    {
-        impl.pageMedicines(0, 1, order, null);
-    }
+  //@Test
+  //public void pageMedicines_null_filter(@Mocked TypedQuery<Long> query,
+  //                                      @Mocked Medicine.SortOrder order)
+  //{
+  //    impl.pageMedicines(0, 1, order, null);
+  //}
     /*
 
     @Test

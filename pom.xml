@@ -84,7 +84,7 @@
                 <configuration>
                     <trimStackTrace>false</trimStackTrace>
                       <!--    <argLine>-Xmx256M</argLine> -->
-                      <argLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/1.38/jmockit-1.38.jar</argLine>
+                      <argLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/1.48/jmockit-1.48.jar</argLine>
                        <environmentVariables>
                           <AUTH0_ISSUER>https://developmentreactgorti.eu.auth0.com</AUTH0_ISSUER>
                        </environmentVariables>
@@ -174,7 +174,7 @@
         <dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
-            <version>1.38</version>
+            <version>1.48</version>
             <scope>test</scope>
         </dependency>
         <dependency>

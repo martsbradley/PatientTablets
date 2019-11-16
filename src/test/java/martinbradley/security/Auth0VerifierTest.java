@@ -110,7 +110,7 @@ public class Auth0VerifierTest {
 
         RSAPublicKey pub = (RSAPublicKey)keyPair.getPublic();
 
-        JsonWebTokenVerifier auth = new JsonWebTokenVerifier(issuer, keyPair.getPublic());
+        JsonWebTokenVerifier auth = new JsonWebTokenVerifier(aIssuer, keyPair.getPublic());
         boolean isValid = auth.validTokenHasScopes(validJWT.toString(), aScopes);
         assertThat(isValid, is(expectedResult));
     }
