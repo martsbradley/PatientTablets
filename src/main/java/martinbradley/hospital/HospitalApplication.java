@@ -1,4 +1,4 @@
-package martinbradley.hospital.rest;
+package martinbradley.hospital;
 
 import javax.ws.rs.ApplicationPath;
 import java.util.HashSet;

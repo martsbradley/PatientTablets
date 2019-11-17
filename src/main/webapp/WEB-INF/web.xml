@@ -12,21 +12,7 @@
         <jsp-file>/index.jsp</jsp-file>
     </servlet>
 
-    <servlet-mapping>
-        <servlet-name>index</servlet-name>
-        <url-pattern>/loginsuccess</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>index</servlet-name>
-        <url-pattern>/loginfailure</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>index</servlet-name>
-        <url-pattern>/logoutsuccess</url-pattern>
-    </servlet-mapping>
-
+    <!--
     <context-param>
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
@@ -43,14 +29,14 @@
         <param-name>javax.faces.validator.ENABLE_VALIDATE_WHOLE_BEAN</param-name>
         <param-value>true</param-value>
     </context-param>
-
+    -->
 
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>myresources</web-resource-name>
             <url-pattern>/*</url-pattern>
-            <http-method>GET</http-method>
-            <http-method>POST</http-method>
+<!--            <http-method>GET</http-method>
+            <http-method>POST</http-method> -->
         </web-resource-collection>
 
         <user-data-constraint>

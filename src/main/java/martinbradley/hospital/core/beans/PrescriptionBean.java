@@ -1,6 +1,5 @@
 package martinbradley.hospital.core.beans;
 import java.time.LocalDate;
-import javax.enterprise.context.RequestScoped;
 
 import martinbradley.hospital.core.beans.MedicineBean;
 import martinbradley.hospital.core.beans.PatientBean;
@@ -15,7 +14,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import martinbradley.hospital.jaxb.LocalDateAdapter;
 
-@RequestScoped
 @XmlRootElement(name="prescription")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PrescriptionBean implements Serializable

@@ -1,63 +1,63 @@
-package martinbradley.auth0;
+package martinbradley.security;
 
+import javax.enterprise.inject.New;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
+
+import martinbradley.security.JsonWebToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
-import java.util.HashSet;
+import javax.ws.rs.core.NewCookie;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CookieHandler {
     private static Logger logger = LoggerFactory.getLogger(CookieHandler.class);
-    private static final String AUTH0_GROUPS = "auth0Groups";
-    private static final String AUTH0_JWT_TOKEN = "jwtToken";
-    private static final String AUTH0_EXPIRES_IN = "auth0ExpiresIn";
-    private static final String AUTH0_LOGGED_IN = "userStatus";
+    private static final String AUTH_GROUPS = "authGroups";
+    private static final String AUTH_JWT_TOKEN = "jwtToken";
+    private static final String AUTH_LOGGED_IN = "userStatus";
     private static Set<String> cookieNames;
 
     static {
         cookieNames = new HashSet<>();
-        cookieNames.add(AUTH0_LOGGED_IN);
-        cookieNames.add(AUTH0_GROUPS);
-        cookieNames.add(AUTH0_JWT_TOKEN);
-        cookieNames.add(AUTH0_EXPIRES_IN);
-        cookieNames.add(AUTH0_LOGGED_IN);
+        cookieNames.add(AUTH_GROUPS);
+        cookieNames.add(AUTH_JWT_TOKEN);
+        cookieNames.add(AUTH_LOGGED_IN);
     }
                                          
-    public void handleSuccessfulLogin(HttpServletResponse res, 
-                                      String jSWebToken,
-                                      String groupsStr,
-                                      String expiresInStr) throws Exception {
+    public List<NewCookie> handleSuccessfulLogin(JsonWebToken jSWebToken) throws Exception {
         final boolean useHttps = true;
+        final boolean httpOnly = true;
+        final boolean notHttpOnly = false;
 
-        Cookie groupsCookie = new Cookie(AUTH0_GROUPS, groupsStr);
-        groupsCookie.setSecure(useHttps);
-        groupsCookie.setPath("/");
-        groupsCookie.setHttpOnly(true);// DO NOT ALLOW JavaScript access to this cookie.
 
-        Cookie jwtCookie = new Cookie(AUTH0_JWT_TOKEN, jSWebToken);
-        jwtCookie.setSecure(useHttps);
-        jwtCookie.setHttpOnly(true);// DO NOT ALLOW JavaScript access to this cookie.
-        jwtCookie.setPath("/");
+        final String [] groups = jSWebToken.getGroups();
 
-        Cookie jwtExpiresIn = new Cookie(AUTH0_EXPIRES_IN, expiresInStr);
-        jwtExpiresIn.setSecure(useHttps);
-        jwtExpiresIn.setPath("/");
+        StringJoiner j = new StringJoiner(",");
+        for (String group: groups) {
+            j.add(group);
+        }
+        String groupsStr = j.toString();
+        logger.info("Groups " + groupsStr);
 
-        Cookie userStatus = new Cookie(AUTH0_LOGGED_IN, "loggedIn");
-        userStatus.setSecure(useHttps);
-        userStatus.setPath("/");
+        String path = "/";
+        String domain = "gorticrum.com";//?
+        String comment = "";
+        int maxAge = 1800;
 
-        res.addCookie(groupsCookie);
-        res.addCookie(jwtCookie);
-        res.addCookie(jwtExpiresIn);
-        res.addCookie(userStatus);
+        List<NewCookie> cookies = new ArrayList<>();
+        cookies.add(new NewCookie(AUTH_GROUPS, groupsStr, path, domain, comment, maxAge, useHttps, httpOnly));
+        // DO NOT ALLOW JavaScript access to this cookie.
+        // But is this not needed for the UI to figure out what things to present.
+
+        cookies.add(new NewCookie(AUTH_JWT_TOKEN, jSWebToken.toString(), path, domain, comment, maxAge, useHttps, httpOnly));
+
+
+        cookies.add(new NewCookie(AUTH_LOGGED_IN, "loggedIn", path, domain, comment, maxAge, useHttps, notHttpOnly));
 
         logger.debug("Added auth0Groups            " + groupsStr);
-        logger.debug("Added Cookie auth0ExpiresIn" + expiresInStr);
         logger.debug("Added Cookie jwtToken" );
 
         // Between the login and the callback the http session
@@ -65,6 +65,7 @@ public class CookieHandler {
         // after this callback is executed that state is no longer needed.
         // removing the session because for a restful frontend there
         // should be no client state stored.
+        return cookies;
     }
     public void clearCookies(HttpServletResponse response) {
         for (String cookieName : cookieNames){

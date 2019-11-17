@@ -4,6 +4,7 @@ import martinbradley.hospital.core.domain.password.AuthGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.Model;
 import java.io.FileInputStream;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 //  This is the high level class for creating a JWT
 //  Handling the RSA signature
+@Model
 public class JWTFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(JWTFactory.class);

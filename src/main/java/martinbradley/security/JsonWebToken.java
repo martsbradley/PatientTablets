@@ -63,6 +63,10 @@ public class JsonWebToken {
         return strPayload;
     }
 
+    public String[] getGroups() {
+        return groups;
+    }
+
     /**
      * This method delivers the final product.
      * @return

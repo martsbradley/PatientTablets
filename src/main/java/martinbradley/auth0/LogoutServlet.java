@@ -21,14 +21,6 @@ public class LogoutServlet extends HttpServlet {
     private String returnToUrl = "";
     private static Logger logger = LoggerFactory.getLogger(LogoutServlet.class);
 
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        
-        domain      = Auth0Constants.AUTH0_DOMAIN.getValue();
-        clientId    = Auth0Constants.AUTH0_CLIENTID.getValue();
-        returnToUrl = Auth0Constants.AUTH0_LOGOUT_SUCCESS.getValue();
-    }
 
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
@@ -40,14 +32,12 @@ public class LogoutServlet extends HttpServlet {
 
         //String returnTo = "https://localhost:3000/logoutsuccess";
 
-        String logoutUrl = String.format("https://%s/v2/logout?client_id=%s&returnTo=%s", domain, clientId, returnToUrl);
+        String logoutUrl = "TBD";
 
         logger.warn("LogoutServlet redirect to '" + logoutUrl + "'");
 
 
-
-        // TODO REMEMBER>
-
+        // TODO REMEMBER to clear cookies.
    //   CookieHandler cookieHandler = new CookieHandler();
    //   cookieHandler.clearCookies(response);
 

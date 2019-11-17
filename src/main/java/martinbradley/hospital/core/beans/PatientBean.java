@@ -1,6 +1,5 @@
 package martinbradley.hospital.core.beans;
 import java.time.LocalDate;
-import javax.faces.view.ViewScoped;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import martinbradley.hospital.jaxb.LocalDateAdapter;
 
-@ViewScoped
 @XmlRootElement(name="patient")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PatientBean implements Serializable
