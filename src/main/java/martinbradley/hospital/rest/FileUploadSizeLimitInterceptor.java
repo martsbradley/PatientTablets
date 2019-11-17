@@ -1,23 +1,12 @@
 package martinbradley.hospital.rest;
 
-import javax.annotation.Priority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.Context;
-import com.auth0.jwk.JwkException;
-import javax.ws.rs.container.ResourceInfo;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Map;
 
 @ContentLengthMethod
 @Provider

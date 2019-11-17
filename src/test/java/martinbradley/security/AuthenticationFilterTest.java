@@ -20,141 +20,141 @@ import java.util.HashMap;
 import javax.ws.rs.core.Cookie;
 
 public class AuthenticationFilterTest {
-    private static Logger logger = LoggerFactory.getLogger(AuthenticationFilterTest.class);
-    JsonWebTokenAuthFilter impl = new JsonWebTokenAuthFilter();
-    @Mocked ContainerRequestContext requestContext;
-    @Mocked ServletContext servletContext;
-    @Mocked ResourceInfo resourceInfo;
-    @Mocked JsonWebTokenVerifier verifier;
+/// private static Logger logger = LoggerFactory.getLogger(AuthenticationFilterTest.class);
+/// JsonWebTokenAuthFilter impl = new JsonWebTokenAuthFilter();
+/// @Mocked ContainerRequestContext requestContext;
+/// @Mocked ServletContext servletContext;
+/// @Mocked ResourceInfo resourceInfo;
+/// @Mocked JsonWebTokenVerifier verifier;
 
-    @Mocked JWTFactory jwtFactory;
+/// @Mocked JWTFactory jwtFactory;
 
-    //@Mocked -ea -javaagent:/home/martin/.m2/repository/org/jmockit/jmockit/1.38/jmockit-1.38.jar
+/// //@Mocked -ea -javaagent:/home/martin/.m2/repository/org/jmockit/jmockit/1.38/jmockit-1.38.jar
 
-    @Mocked
-    SecuredRestfulMethodHelper helper;
+/// @Mocked
+/// SecuredRestfulMethodHelper helper;
 
-    @BeforeEach
-    public void setMeUp() throws Exception {
-        impl.resourceInfo = resourceInfo;
-        impl.setServletContext(servletContext);
-    }
+/// @BeforeEach
+/// public void setMeUp() throws Exception {
+///     impl.resourceInfo = resourceInfo;
+///     impl.setServletContext(servletContext);
+/// }
 
-    private void expectedAuth0Result(final boolean authResult) 
-        throws IOException, ServletException {
-        new Expectations() {{
+/// private void expectedAuth0Result(final boolean authResult)
+///     throws IOException, ServletException {
+///     new Expectations() {{
 
-            verifier.isValidAccessRequest(anyString, anyString, (String[])any);
-            result = authResult;
-        }};
-    }
+///         verifier.isValidAccessRequest(anyString, anyString, (String[])any);
+///         result = authResult;
+///     }};
+/// }
 
-    private void expectBearerToken(final String aToken){
-        new Expectations(){{
-            requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-            result = "Bearer " + aToken;
-            logger.debug("expectBearerToken 'Bearer ' "+ aToken);
-        }};
-    }
-    private void expectCookeJWT(final String aToken) {
-        new Expectations(){{
-            Map<String, Cookie> cookieMap = new HashMap<>();
-            Cookie jwtToken = new Cookie("jwtToken", aToken);
-            cookieMap.put("jwtToken", jwtToken);
+/// private void expectBearerToken(final String aToken){
+///     new Expectations(){{
+///         requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+///         result = "Bearer " + aToken;
+///         logger.debug("expectBearerToken 'Bearer ' "+ aToken);
+///     }};
+/// }
+/// private void expectCookeJWT(final String aToken) {
+///     new Expectations(){{
+///         Map<String, Cookie> cookieMap = new HashMap<>();
+///         Cookie jwtToken = new Cookie("jwtToken", aToken);
+///         cookieMap.put("jwtToken", jwtToken);
 
-            requestContext.getCookies();
-            result = cookieMap;
-        }};
-    }
+///         requestContext.getCookies();
+///         result = cookieMap;
+///     }};
+/// }
 
-    private void expectedGroups(String ... groups) throws Exception {
-        new Expectations(){{
-            helper.getGroups((ResourceInfo)any);
-            result = groups;
-        }};
-    }
+/// private void expectedGroups(String ... groups) throws Exception {
+///     new Expectations(){{
+///         helper.getGroups((ResourceInfo)any);
+///         result = groups;
+///     }};
+/// }
 
-    private void timesAbortCalled(int aTimesCalled) {
-        new Expectations(){{
-            requestContext.abortWith( (Response)any);
-            times = aTimesCalled;
-        }};
-    }
+/// private void timesAbortCalled(int aTimesCalled) {
+///     new Expectations(){{
+///         requestContext.abortWith( (Response)any);
+///         times = aTimesCalled;
+///     }};
+/// }
 
-    @Test
-    public void testSuccessfulWithHeaderToken() 
-        throws Exception {
+/// @Test
+/// public void testSuccessfulWithHeaderToken()
+///     throws Exception {
 
-        expectBearerToken("123");
+///     expectBearerToken("123");
 
-        expectedGroups("admins");
+///     expectedGroups("admins");
 
-        expectedAuth0Result(true);
+///     expectedAuth0Result(true);
 
-        timesAbortCalled(0);
+///     timesAbortCalled(0);
 
-        new Expectations(){{
-            requestContext.abortWith( (Response)any);
-            times = 0;
-        }};
+///     new Expectations(){{
+///         requestContext.abortWith( (Response)any);
+///         times = 0;
+///     }};
 
-        impl.filter(requestContext);
-    }
+///     impl.filter(requestContext);
+/// }
 
-    @Test
-    public void testSuccessfulWithCookie()
-        throws Exception {
+/// @Test
+/// public void testSuccessfulWithCookie()
+///     throws Exception {
 
-        expectCookeJWT("123");
+///     expectCookeJWT("123");
 
-        expectedGroups("admins");
+///     expectedGroups("admins");
 
-        expectedAuth0Result(true);
+///     expectedAuth0Result(true);
 
-        timesAbortCalled(0);
+///     timesAbortCalled(0);
 
-        new Expectations(){{
-            requestContext.abortWith( (Response)any);
-            times = 0;
-        }};
+///     new Expectations(){{
+///         requestContext.abortWith( (Response)any);
+///         times = 0;
+///     }};
 
-        impl.filter(requestContext);
-    }
+///     impl.filter(requestContext);
+/// }
 
-    @Test
-    public void testFailed_NoGroups()
-        throws Exception {
+/// @Test
+/// public void testFailed_NoGroups()
+///     throws Exception {
 
-        expectBearerToken("123");
+///     expectBearerToken("123");
 
-        expectedGroups();
+///     expectedGroups();
 
-        timesAbortCalled(1);
+///     timesAbortCalled(1);
 
-        impl.filter(requestContext);
-    }
-    @Test
-    public void testFailed_NotAuthorized()
-        throws Exception {
+///     impl.filter(requestContext);
+/// }
+/// @Test
+/// public void testFailed_NotAuthorized()
+///     throws Exception {
 
-        expectBearerToken("123");
+///     expectBearerToken("123");
 
-        expectedGroups("admins");
+///     expectedGroups("admins");
 
-        expectedAuth0Result(false);
+///     expectedAuth0Result(false);
 
-        timesAbortCalled(1);
+///     timesAbortCalled(1);
 
-        impl.filter(requestContext);
-    }
+///     impl.filter(requestContext);
+/// }
 
-    @Test
-    public void testFailed_NoToken()
-        throws Exception {
+/// @Test
+/// public void testFailed_NoToken()
+///     throws Exception {
 
-        timesAbortCalled(1);
+///     timesAbortCalled(1);
 
-        impl.filter(requestContext);
-    }
+///     impl.filter(requestContext);
+/// }
 
 }
