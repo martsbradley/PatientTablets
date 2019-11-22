@@ -8,13 +8,12 @@
     <artifactId>hospital-war</artifactId>
     <packaging>war</packaging>
     <name>${project.artifactId}</name>
-    <description>The web front-end for the First Cup Tutorial example.</description>
+    <description>Pom file for Gorticrum.com</description>
 
     <properties>
         <javaee.api.version>8.0</javaee.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.war.plugin.version>2.3</maven.war.plugin.version>
-        <maven.deploy.skip>true</maven.deploy.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
@@ -77,25 +76,50 @@
                 </dependencies>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0</version>
                 <executions>
-                    <execution>
-                    <phase>package</phase>
+                  <execution>
+                    <id>copy-react-files-into-ear</id>
+                    <phase>generate-sources</phase>
                     <goals>
-                    <goal>exec</goal>
+                      <goal>copy</goal>
                     </goals>
-                    </execution>
+                    <configuration>
+                        <fileSets>
+                            <fileSet>
+                                <sourceFile>/home/martin/Software/JavaScript/HospitalReact/dist/bundle.js</sourceFile>
+                                <destinationFile>src/main/webapp/bundle.js</destinationFile>
+                            </fileSet>
+                            <fileSet>
+                                <sourceFile>/home/martin/Software/JavaScript/HospitalReact/src/index.html</sourceFile>
+                                <destinationFile>src/main/webapp/index.html</destinationFile>
+                            </fileSet>
+                        </fileSets>
+                    </configuration>
+                  </execution>
+                  <execution>
+                    <id>copy-ear-into-docker</id>
+                        <phase>package</phase>   <!-- After packaging copy it into deployment folder -->
+                    <goals>
+                        <goal>copy</goal>
+                    </goals>
+                    <configuration>
+                        <fileSets>
+                            <fileSet> 
+                                <sourceFile>target/hospital-war.war</sourceFile>
+                                <destinationFile>/home/martin/Software/Docker/Gorticrum/data/jboss/deployments/hospital-war.war</destinationFile>
+                            </fileSet>
+                            <fileSet> 
+                                <sourceFile>/home/martin/Software/Java/PatientTablets/pom.xml</sourceFile>
+                                <destinationFile>/home/martin/Software/Docker/Gorticrum/data/jboss/deployments/hospital-war.war.deployed</destinationFile>
+                            </fileSet>
+                        </fileSets>
+                    </configuration>
+                  </execution>
                 </executions>
-                <configuration>
-                    <executable>/usr/bin/touch</executable>
-                    <workingDirectory>.</workingDirectory>
-                    <arguments>
-                        <argument>/home/martin/Software/Java/wildfly/wildfly-13.0.0.Final/standalone/deployments/hospital.war.dodeploy</argument>
-                    </arguments>
-                </configuration>
-            </plugin>
+              </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -106,34 +130,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>com.coderplus.maven.plugins</groupId>
-                <artifactId>copy-rename-maven-plugin</artifactId>
-                <version>1.0</version>
-                <executions>
-                  <execution>
-                    <id>copy-file</id>
-                    <phase>generate-sources</phase>
-                    <goals>
-                      <goal>copy</goal>
-                    </goals>
-                    <configuration>
-                      <sourceFile>src/someDirectory/test.environment.properties</sourceFile>
-                      <destinationFile>target/someDir/environment.properties</destinationFile>
-                        <fileSets>
-                            <fileSet>
-                            <sourceFile>/home/martin/Software/JavaScript/HospitalReact/dist/bundle.js</sourceFile>
-                            <destinationFile>src/main/webapp/bundle.js</destinationFile>
-                            </fileSet>
-                            <fileSet>
-                            <sourceFile>/home/martin/Software/JavaScript/HospitalReact/src/index.html</sourceFile>
-                            <destinationFile>src/main/webapp/index.html</destinationFile>
-                            </fileSet>
-                        </fileSets>
-                    </configuration>
-                  </execution>
-                </executions>
-              </plugin>
         </plugins>
     </build>
 
