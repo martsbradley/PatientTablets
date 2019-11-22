@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum Auth0Constants {
-    AUTH0_ISSUER;
+    AUTH0_ISSUER,
+    AUTH_KEYSTORE,
+    AUTH_KEYSTORE_PASSWD;
 
     private static Logger logger = LoggerFactory.getLogger(Auth0Constants.class);
     public String getValue() {

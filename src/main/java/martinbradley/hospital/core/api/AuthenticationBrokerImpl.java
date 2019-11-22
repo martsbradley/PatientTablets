@@ -17,11 +17,11 @@ import java.util.Set;
 @Model
 public class AuthenticationBrokerImpl implements AuthenticationBroker
 {
-//  private static final Logger logger = LoggerFactory.getLogger(AuthenticationBrokerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationBrokerImpl.class);
 
-//  @Inject AuthUserGroupRepo userRepo;
+    @Inject AuthUserGroupRepo userRepo;
 
-//  @Inject JWTFactory jwtFactory;
+    @Inject JWTFactory jwtFactory;
 
     @Override
     public JsonWebToken authenticate(String userName, String password) throws AuthenticationException {
@@ -30,20 +30,20 @@ public class AuthenticationBrokerImpl implements AuthenticationBroker
  //     // Select the groups from the database that have that user and that hash.
  //     // Use the groups provided to create a JWTString.
 
- //     Salt salt = userRepo.getUserSalt(userName);
+        Salt salt = userRepo.getUserSalt(userName);
 
- //     PasswordHelper passwordHelper = new PasswordHelper();
- //     String hashedPassword = passwordHelper.hashPassword(password, salt.getSaltValue());
+        PasswordHelper passwordHelper = new PasswordHelper();
+        String hashedPassword = passwordHelper.hashPassword(password, salt.getSaltValue());
 
- //     Set<AuthGroup> groups = userRepo.authenticate(userName, hashedPassword);
+        Set<AuthGroup> groups = userRepo.authenticate(userName, hashedPassword);
 
         JsonWebToken jwt = null;
- //     try {
- //         jwt = jwtFactory.createJWT(groups);
- //     } catch (Exception e) {
- //         logger.warn("Failed to create JWT");
- //         throw new AuthenticationException(e.getMessage());
- //     }
+        try {
+            jwt = jwtFactory.createJWT(groups);
+        } catch (Exception e) {
+            logger.warn("Failed to create JWT");
+            throw new AuthenticationException(e.getMessage());
+        }
         return jwt;
     }
 }

@@ -35,17 +35,15 @@ public class JWTFactory {
     }
 
     private KeyPair loadKeyStore() {
-        // FROM ENVIRONMENT ...
-        String keyStorePath = "/home/martin/Software/Security/JavaKeytool/examplestore";
-        char [] keyStorePassword = "abcdef".toCharArray();
+
+        String keyStorePath = Auth0Constants.AUTH_KEYSTORE.getValue();
+        char [] keyStorePassword = Auth0Constants.AUTH_KEYSTORE_PASSWD.getValue().toCharArray();;
 
         KeyPair keyPair = getKeyPair(keyStorePath, keyStorePassword);
         return keyPair;
     }
 
     public KeyPair getKeyPair(String keyStorePath, char[] keyStorePassword) {
-
-        logger.info("Starting");
 
         try (FileInputStream is = new FileInputStream(keyStorePath)) {
 
@@ -58,7 +56,6 @@ public class JWTFactory {
             Arrays.fill(keyStorePassword, '0');
 
             if (key instanceof PrivateKey) {
-                logger.info("Key is a private one " + key);
                 // Get certificate of public key
                 Certificate cert = keystore.getCertificate(alias);
 

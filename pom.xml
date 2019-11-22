@@ -64,6 +64,8 @@
                       <argLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/1.48/jmockit-1.48.jar</argLine>
                        <environmentVariables>
                           <AUTH0_ISSUER>https://developmentreactgorti.eu.auth0.com</AUTH0_ISSUER>
+                          <AUTH_KEYSTORE>/home/martin/Software/Docker/Gorticrum/data/jboss/keys/passwordkeystore</AUTH_KEYSTORE>       
+                          <AUTH_KEYSTORE_PASSWD>abcdef</AUTH_KEYSTORE_PASSWD>
                        </environmentVariables>
                 </configuration>
                 <dependencies>
