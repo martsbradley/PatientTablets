@@ -15,37 +15,39 @@ import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
 
-//@Path("/authenticate")
+@Path("/authenticate")
 public class AuthenticationEndPoint
 {
- // private static Logger logger = LoggerFactory.getLogger(AuthenticationEndPoint.class);
+    private static Logger logger = LoggerFactory.getLogger(AuthenticationEndPoint.class);
 
- // @Inject
- // AuthenticationHandler authenticationHandler;
+    @Inject
+    AuthenticationHandler authenticationHandler;
 
- // @POST
- // @Path("authenticate")
- // @Produces("application/json")
- // public Response authenticate(UserPassword userDetails)
- // {
- //     logger.warn("authenticate " + userDetails);
+    @POST
+    @Produces("application/json")
+    public Response authenticate(UserPassword userDetails)
+    {
+        logger.debug("authenticate " + userDetails);
 
- //     List<NewCookie> cookies = Collections.emptyList();
- //     // needs to check the database and create a JWT token if the user is valid.
- //     try {
- //         JsonWebToken jasonWebToken = authenticationHandler.authenticate(userDetails);
- //         CookieHandler ch = new CookieHandler();
- //         cookies = ch.handleSuccessfulLogin(jasonWebToken);
- //     }
- //     catch (Exception e) {
- //         //denied.
- //     }
- //     NewCookie[] cookieArr = new NewCookie[cookies.size()];
- //     cookieArr = cookies.toArray(cookieArr);
+        List<NewCookie> cookies = Collections.emptyList();
+        // needs to check the database and create a JWT token if the user is valid.
+        try {
+            JsonWebToken jasonWebToken = authenticationHandler.authenticate(userDetails);
+            CookieHandler ch = new CookieHandler();
+            cookies = ch.handleSuccessfulLogin(jasonWebToken);
+        }
+        catch (Exception e) {
+            logger.warn("Access denied for " + userDetails);
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+        NewCookie[] cookieArr = new NewCookie[cookies.size()];
+        cookieArr = cookies.toArray(cookieArr);
 
- //     return Response.accepted()
- //                    .type(MediaType.APPLICATION_JSON)
- //                    .cookie(cookieArr)
- //                    .build();
- // }
+        return Response.accepted()
+                       .type(MediaType.APPLICATION_JSON)
+                       .cookie(cookieArr)
+                       .build();
+    }
 }
