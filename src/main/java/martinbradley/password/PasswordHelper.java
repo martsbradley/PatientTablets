@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 public class PasswordHelper {
 
@@ -13,10 +15,14 @@ public class PasswordHelper {
 
     public String hashPassword(String password, String salt) {
 
-        logger.debug("Hashing password");
+        //  DO NOT UNCOMMENT.
+        //logger.debug("Hashing password" + password);
+        //logger.debug("With salt" + salt);
         String originalString = concatPasswordAndSalt(password, salt);
 
         String sha256hex = makeHash(password, salt);
+
+        //logger.debug("Resulting hash is " + sha256hex);
 
         return sha256hex;
     }
@@ -36,6 +42,8 @@ public class PasswordHelper {
             byte[] encodedhash = digest.digest(
                     originalString.getBytes(StandardCharsets.UTF_8));
 
+            logger.info("Digest makes array that is length "+ encodedhash.length);
+
             hash = bytesToHex(encodedhash);
         } catch (NoSuchAlgorithmException e) {
             logger.warn("No such algorithm", e);
@@ -54,7 +62,13 @@ public class PasswordHelper {
         return hexString.toString();
     }
 
-
-
+    public String generateSalt() {
+        SecureRandom random = new SecureRandom();
+        byte bytes[] = new byte[32];
+        random.nextBytes(bytes);
+        String result = bytesToHex(bytes);
+        logger.info("generated Salt that is length " + result.length());
+        return result;
+    }
 }
 

@@ -37,7 +37,7 @@ public class AuthenticationEndPoint
             cookies = ch.handleSuccessfulLogin(jasonWebToken);
         }
         catch (Exception e) {
-            logger.warn("Access denied for " + userDetails);
+            logger.warn("Access denied for " + userDetails, e);
             return Response.status(Response.Status.UNAUTHORIZED)
                     .type(MediaType.APPLICATION_JSON)
                     .build();

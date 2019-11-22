@@ -13,6 +13,14 @@ import static org.hamcrest.core.Is.is;
 public class PasswordHelperTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PasswordHelper.class);
+    @Test
+    public void makePassword() {
+        PasswordHelper ph = new PasswordHelper();
+        String salt = ph.generateSalt();
+        String passwordHash = ph.hashPassword("marty", salt);
+        logger.info("salt " + salt);
+        logger.info("passwordHash " + passwordHash);
+    }
 
     @Test
     public void patient_load_not_found_404() {

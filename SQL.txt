@@ -1,54 +1,296 @@
-drop table prescription;
-drop table patient;
-drop table medicine;
-drop table uploadedimage;
-
 create table patient (
-id SERIAL PRIMARY KEY,
-forename varchar(20) NOT NULL,
-surname varchar(50) NOT NULL,
-sex varchar(6) CHECK (sex IN ('Male','Female')) NOT NULL,
-dateofbirth timestamp NOT NULL,
-version integer NOT NULL
+    id SERIAL PRIMARY KEY,
+    forename varchar(20) NOT NULL,
+    surname varchar(50) NOT NULL,
+    sex varchar(6) CHECK (sex IN ('Male','Female')) NOT NULL,
+    dateofbirth timestamp NOT NULL,
+    version integer NOT NULL
 );
 
 create table medicine (
-id SERIAL PRIMARY KEY,
-name varchar(50) NOT NULL,
-manufacturer varchar(50) NOT NULL,
-delivery_method varchar(12) CHECK (delivery_method IN ('Intravenous','Tablet','Liquid','Suppository'))
+    id SERIAL PRIMARY KEY,
+    name varchar(50) NOT NULL,
+    manufacturer varchar(50) NOT NULL,
+    delivery_method varchar(12) CHECK (delivery_method IN ('Intravenous','Tablet','Liquid','Suppository'))
 );
 
 create table prescription (
-id SERIAL PRIMARY KEY,
-patient_id INTEGER NOT NULL REFERENCES patient (id),
-medicine_id INTEGER NOT NULL REFERENCES medicine (id),
-start_date TIMESTAMP NOT NULL,
-end_date TIMESTAMP NOT NULL,
-amount VARCHAR(40) NOT NULL
+    id SERIAL PRIMARY KEY,
+    patient_id INTEGER NOT NULL REFERENCES patient (id),
+    medicine_id INTEGER NOT NULL REFERENCES medicine (id),
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    amount VARCHAR(40) NOT NULL
 );
 
-
-
-
 create table logindetails (
-id SERIAL PRIMARY KEY,
-name varchar(255),
-given_name varchar(255),
-family_name varchar(255),
-nickname varchar(50),
-gender varchar(10),
-locale varchar(10),
-updated_at varchar(50),
-picture varchar(250),
-groups varchar(250)
+    id SERIAL PRIMARY KEY,
+    name varchar(255),
+    given_name varchar(255),
+    family_name varchar(255),
+    nickname varchar(50),
+    gender varchar(10),
+    locale varchar(10),
+    updated_at varchar(50),
+    picture varchar(250),
+    groups varchar(250)
 );
 
 create table uploadedimage (
-id SERIAL PRIMARY KEY,
-patient_id INTEGER NOT NULL REFERENCES patient (id),
-name   VARCHAR(250) NOT NULL,
-bucket VARCHAR(40) NOT NULL,
-description VARCHAR(250),
-date_uploaded TIMESTAMP NOT NULL
+    id SERIAL PRIMARY KEY,
+    patient_id INTEGER NOT NULL REFERENCES patient (id),
+    name   VARCHAR(250) NOT NULL,
+    bucket VARCHAR(40) NOT NULL,
+    description VARCHAR(250),
+    date_uploaded TIMESTAMP NOT NULL
 );
+
+create table auth_user (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(64) NOT NULL,
+    salt     VARCHAR(64) NOT NULL,
+    passwordHash VARCHAR(64) NOT NULL
+);
+
+create table auth_group(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(64) NOT NULL,
+    description VARCHAR(64) NOT NULL
+);
+
+
+create table auth_user_group(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES auth_user (id),
+    group_id INTEGER NOT NULL REFERENCES auth_group (id),
+    created TIMESTAMP NOT NULL
+);
+
+
+insert into auth_group(name,description)
+values ('admin', 'root access');
+
+insert into auth_user(username, salt, passwordHash)
+values ('marty', 'e6f5f886028b4fd1903605a4f991f19a95cb0347c3be68ac7ce06053365f8c75','2ac0f6fb4cf32ac9ee6b45ca7ee5a24367bff3132bf97be190eac413aa02d51a');
+
+insert into auth_user_group(user_id, group_id, created)
+values ( 1, 1,'2019-01-11');
+
+-- Patients;
+insert into patient (forename,surname,sex,dateofbirth,version)
+values ('Martin', 'Riggs', 'Male', '2011-01-01',0); 
+
+insert into patient (forename,surname,sex,dateofbirth,version)
+values ('Lisa', 'Burnett', 'Male', '2013-01-01',0); 
+
+insert into patient (forename,surname,sex,dateofbirth,version)
+values ('Joan', 'OArch', 'Female', '1980-11-01',0); 
+
+insert into patient (forename,surname,sex,dateofbirth,version)
+values ('Michael', 'Corleone', 'Male', '1945-12-01',0); 
+
+insert into patient (forename,surname,sex,dateofbirth,version)
+values ('James', 'Dean', 'Male', '1938-12-01',0); 
+
+insert into patient (forename,surname,sex,dateofbirth,version)
+values ('Karen', 'Carter', 'Male', '1979-12-01',0); 
+-- Medicines.
+
+
+
+insert into medicine (name,manufacturer,delivery_method) values ('amitriptyline','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('caffeine2','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('clomipramine','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('clozapine','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('cyclobenzaprine','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('duloxetine','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('estradiol','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('fluvoxamine','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('haloperidol','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('imipramine N-DeMe','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('mexiletine','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('nabumetone','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('naproxen','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('olanzapine','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('ondansetron','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('phenacetin1','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('acetaminophen NAPQI','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('propranolol','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('riluzole','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('ropivacaine','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('tacrine2','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('theophylline2','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('tizanidine','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('triamterene','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('verapamil','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('warfarin','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('zileuton','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('zolmitriptan','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('artemisinin','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('bupropion1','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('cyclophosphamide','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('efavirenz1','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('ifosphamide','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('ketamine','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('meperidine','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('methadone','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('nevirapine','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('propafol','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('selegiline','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('sorafenib amodiaquine2','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('cerivastatin','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('paclitaxel','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('repaglinide','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('sorafenib','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('torsemide NSAIDs','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('diclofenac1','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('ibuprofen','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('lornoxicam','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('meloxicam','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('S-naproxen→Nor','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('piroxicam','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('suprofen','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('tolbutamide1','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('glipizide','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('losartan','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('irbesartan','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('Sulfonylureas','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('glyburide','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('glibenclamide','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('glipizide','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('glimepiride','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('tolbutamide','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('amitriptyline','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('celecoxib','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('fluoxetine','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('fluvastatin','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('glyburide','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('nateglinide','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('phenytoin-4-OH2','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('rosiglitazone','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('tamoxifen','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('torsemide','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('valproic acid','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('S-warfarin1','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('zakirlukast ','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('esomeprazole','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('lansoprazole','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('omeprazole2','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('pantoprazole','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('Anti-epileptics','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('diazepam Nor','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('phenytoin(O)','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('S-mephenytoin1','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('phenobarbitone','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('amitriptyline','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('carisoprodol','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('citalopram','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('chloramphenicol','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('clomipramine','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('clopidogrel','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('cyclophosphamide','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('hexobarbital','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('imipramine N-DeME','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('indomethacin','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('labetalol','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('R-mephobarbital','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('moclobemide','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('nelfinavir','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('nilutamide','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('primidone','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('progesterone','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('proguanil','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('propranolol','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('teniposide','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('R-warfarin8-OH','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('voriconazole tamoxifen','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('carvedilol','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('S-metoprolol','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('propafenone','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('timolol','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('amitriptyline','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('clomipramine','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('desipramine','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('fluoxetine','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('imipramine','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('paroxetine','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('venlafaxine','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('haloperidol','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('perphenazine','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('risperidone→9-OH','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('thioridazine','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('zuclopenthixol','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('alprenolol','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('amphetamine','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('aripiprazole','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('atomoxetine','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('bufuralol1','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('chlorpheniramine','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('chlorpromazine','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('clonidine','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('codeine (→O-desMe)','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('debrisoquine2','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('dexfenfluramine','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('dextromethorphan1','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('donepezil','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('duloxetine','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('encainide','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('flecainide','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('fluvoxamine','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('lidocaine','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('metoclopramide','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('methoxyamphetamine','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('mexiletine','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('minaprine','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('nebivolol','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('nortriptyline','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('ondansetron','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('oxycodone','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('perhexiline','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('phenacetin','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('phenformin','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('promethazine','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('propafenone','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('propranolol','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('risperidone','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('sparteine','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('tramadol Anesthetics','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('enflurane','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('halothane','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('isoflurane','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('methoxyflurane','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('sevoflurane','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('acetaminophen→NAPQI','GlaxoSmithKline'      ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('aniline2','Novartis'             ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('benzene','Sanofi'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('chlorzoxazone1','AstraZeneca'          ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('ethanol','Abbott Laboratories' ,'Suppository');
+insert into medicine (name,manufacturer,delivery_method) values ('N,N-dimethylformamide','Johnson & Johnson'    ,'Intravenous');
+insert into medicine (name,manufacturer,delivery_method) values ('theophylline→8-OH','Pfizer'               ,'Tablet');
+insert into medicine (name,manufacturer,delivery_method) values ('Macrolide antibiotics','Roche'                ,'Liquid');
+insert into medicine (name,manufacturer,delivery_method) values ('clarithromycin','GlaxoSmithKline'      ,'Suppository');
+
+
+
+-- Prescriptions
+insert into prescription (patient_id,medicine_id,start_date,end_date,amount) values 
+  (2, 97, '2011-01-01', '2012-01-01', 'twice daily');
+
+insert into prescription (patient_id,medicine_id,start_date,end_date,amount) values 
+  (1, 37, '2011-01-01', '2012-01-01', 'twice daily');
+
+insert into prescription (patient_id,medicine_id,start_date,end_date,amount) values 
+  (2, 64, '2011-01-01', '2012-01-01', 'twice daily');
+
+insert into prescription (patient_id,medicine_id,start_date,end_date,amount) values 
+  (4, 27, '2011-01-01', '2012-01-01', 'twice daily');
+insert into prescription (patient_id,medicine_id,start_date,end_date,amount) values 
+  (4, 26, '2011-01-01', '2012-01-01', 'twice daily');
+insert into prescription (patient_id,medicine_id,start_date,end_date,amount) values 
+  (4, 86, '2011-01-01', '2012-01-01', 'twice daily');
+
+insert into prescription (patient_id,medicine_id,start_date,end_date,amount) values 
+  (6, 17, '2011-01-01', '2012-01-01', 'twice daily');
+insert into prescription (patient_id,medicine_id,start_date,end_date,amount) values 
+  (6, 15, '2011-01-01', '2012-01-01', 'once daily');

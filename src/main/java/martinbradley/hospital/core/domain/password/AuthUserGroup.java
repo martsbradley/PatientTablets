@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
-@Table(name="user_group")
+@Table(name="auth_user_group")
 public class AuthUserGroup {
     private static final Logger logger = LoggerFactory.getLogger(AuthUserGroup.class);
     @Id

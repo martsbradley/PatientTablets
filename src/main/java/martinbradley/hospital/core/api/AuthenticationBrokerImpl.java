@@ -35,15 +35,21 @@ public class AuthenticationBrokerImpl implements AuthenticationBroker
         PasswordHelper passwordHelper = new PasswordHelper();
         String hashedPassword = passwordHelper.hashPassword(password, salt.getSaltValue());
 
-        Set<AuthGroup> groups = userRepo.authenticate(userName, hashedPassword);
-
         JsonWebToken jwt = null;
         try {
+            Set<AuthGroup> groups = userRepo.authenticate(userName, hashedPassword);
+
+            logger.debug("authenticate got groups " + groups.size());
             jwt = jwtFactory.createJWT(groups);
-        } catch (Exception e) {
-            logger.warn("Failed to create JWT");
+        } catch (AuthenticationException e) {
+            logger.warn("Failed to authenticate ");
             throw new AuthenticationException(e.getMessage());
         }
+        catch (Exception e) {
+            logger.warn("Failed to create JWT", e);
+            throw new AuthenticationException(e.getMessage());
+        }
+
         return jwt;
     }
 }
