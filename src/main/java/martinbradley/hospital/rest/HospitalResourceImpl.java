@@ -77,6 +77,7 @@ public class HospitalResourceImpl
                                  .build();
         List<PatientBean> patients = patientHandler.pagePatients(pageInfo);
 
+        logger.info("pagePatients called returning :" + patients.size());
         GenericEntity<List<PatientBean>> entity = new GenericEntity<List<PatientBean>>(patients) {};
 
         return Response.accepted(entity)
@@ -87,7 +88,7 @@ public class HospitalResourceImpl
     @POST
     @Path("patient")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"adminGroup"})
+    @SecuredRestfulMethod(groups={"admin"})
     public Response savePatient(PatientBean patientBean)
     {
         logger.info("savePatient " + patientBean);
@@ -165,7 +166,7 @@ public class HospitalResourceImpl
     @POST
     @Path("patient/{patientId}/medicine/{medicineId}")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"adminGroup"})
+    @SecuredRestfulMethod(groups={"admin"})
     public Response savePrescription(@PathParam("patientId") long patientId,  
                                      @PathParam("medicineId") long medicineId,  
                                      PrescriptionBean prescriptionBean)
@@ -205,11 +206,25 @@ public class HospitalResourceImpl
                        .build();
     }
 
+    @GET
+    @Path("patient/{patientId}/images")
+    @Produces("application/json")
+    @SecuredRestfulMethod(groups={"admin"})
+    public Response listImages(@PathParam("patientId") long patientId) {
+        logger.debug("listImages");
+        List<String> urls = patientHandler.listImages(patientId);
+        logger.debug("listImages returning " + urls.size());
+
+        return Response.accepted(urls)
+                .type(MediaType.APPLICATION_JSON)
+                .build();
+    }
+
     @POST
     @Path("patient/{patientId}/image")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"adminGroup"})
+    @SecuredRestfulMethod(groups={"admin"})
     @ContentLengthMethod
     public Response addImage(@PathParam("patientId") long patientId,
                              @MultipartForm ImageUploadedBean myForm)

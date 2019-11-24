@@ -18,6 +18,7 @@ public class CookieHandler {
     private static final String AUTH_GROUPS = "authGroups";
     private static final String AUTH_JWT_TOKEN = "jwtToken";
     private static final String AUTH_LOGGED_IN = "userStatus";
+    private static final String domain;
     private static Set<String> cookieNames;
 
     static {
@@ -25,6 +26,7 @@ public class CookieHandler {
         cookieNames.add(AUTH_GROUPS);
         cookieNames.add(AUTH_JWT_TOKEN);
         cookieNames.add(AUTH_LOGGED_IN);
+        domain = Auth0Constants.AUTH_DOMAIN.getValue();
     }
                                          
     public List<NewCookie> handleSuccessfulLogin(JsonWebToken jSWebToken) throws Exception {
@@ -43,7 +45,6 @@ public class CookieHandler {
         logger.info("Groups " + groupsStr);
 
         String path = "/";
-        String domain = "gorticrum.com";//?
         String comment = "";
         int maxAge = 1800;
 

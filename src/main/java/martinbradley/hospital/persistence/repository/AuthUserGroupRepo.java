@@ -15,9 +15,7 @@ import javax.naming.AuthenticationException;
 import javax.persistence.*;
 import javax.transaction.*;
 import javax.transaction.RollbackException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Model
 @TransactionManagement(TransactionManagementType.BEAN)
@@ -60,27 +58,34 @@ public class AuthUserGroupRepo {
     public Set<AuthGroup> authenticate(String userName, String hashedPassword)
         throws AuthenticationException {
 
-        logger.warn(String.format("Auth Database check for user %s", userName));
+        logger.info(String.format("Auth Database check for user %s", userName));
+
 
         TypedQuery<AuthUser> authQuery = entityManager.createQuery( "from AuthUser user " +
                                                          "where " +
                                                          "user.username = (?1) and" +
                                                          " user.passwordHash = (?2)",
                                                           AuthUser.class);
+
+        EntityGraph graph = entityManager.getEntityGraph("graph.AuthUser.prescriptions");
+
+        authQuery.setHint("javax.persistence.loadgraph", graph);
+
         Set<AuthGroup> groups = new HashSet<>();
 
         authQuery.setParameter(1, userName);
         authQuery.setParameter(2, hashedPassword);
         try {
             tx.begin();
-            logger.warn(String.format("Calling query for user %s", userName));
+            logger.info(String.format("Calling query for user %s", userName));
             AuthUser user = authQuery.getSingleResult();
-            Set<AuthUserGroup> authUserGroups = user.getGroups();
+            Set<AuthUserGroup> authUserGroups = user.getAuthUserGroups();
 
-            logger.warn(String.format("Got Groups user %s", userName));
+            logger.info(String.format("Got Groups user %s", userName));
             for (AuthUserGroup authUserGroup : authUserGroups) {
                 groups.add(authUserGroup.getGroup());
             }
+            logger.info(String.format("Loaded groups user %s", userName));
             tx.commit();
         }
         catch (NoResultException e) {

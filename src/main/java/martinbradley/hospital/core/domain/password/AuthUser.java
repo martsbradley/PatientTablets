@@ -13,6 +13,8 @@ import java.util.Set;
             query="select user.salt from AuthUser user where username = :username")
 @Entity
 @Table(name="auth_user")
+@NamedEntityGraph(name = "graph.AuthUser.prescriptions",
+        attributeNodes = {@NamedAttributeNode("authUserGroups")})
 public class AuthUser
 {
     @Id 
@@ -64,11 +66,11 @@ public class AuthUser
         this.passwordHash = passwordHash;
     }
 
-    public Set<AuthUserGroup> getGroups() {
+    public Set<AuthUserGroup> getAuthUserGroups() {
         return authUserGroups;
     }
 
-    public void setGroups(Set<AuthUserGroup> groups) {
+    public void setAuthUserGroups(Set<AuthUserGroup> groups) {
         this.authUserGroups= authUserGroups;
     }
 }
