@@ -27,6 +27,7 @@ public class JsonWebTokenVerifier {
 
         final Algorithm algorithm = Algorithm.RSA256((RSAPublicKey)aPublicKey, 
                                                      privateKey);
+        logger.info("Created Verifier with issuer '" + aIssuer + "'");
         verifier = JWT.require(algorithm)
                       .withIssuer(aIssuer)
                       .build(); 

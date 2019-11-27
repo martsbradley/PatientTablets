@@ -41,7 +41,6 @@ public class PatientBrokerImpl implements PatientBroker
         List<Patient> patients = repo.pagePatients(aPageInfo.getStartingAt(), 
                                                    aPageInfo.getMaxPerPage(), 
                                                    ordering);
-
         return patients;
     }
 

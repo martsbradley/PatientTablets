@@ -25,8 +25,9 @@ public class JWTFactory {
 
     public JWTFactory() {
 
-        this.issuer = "Martin Bradley"; // Load from environment.
-        this.namespace = "mySite";      // Load from environment.
+        this.issuer = Auth0Constants.AUTH0_ISSUER.getValue();
+        this.namespace = Auth0Constants.AUTH_DOMAIN.getValue();
+
         keyPair = loadKeyStore();
     }
 
