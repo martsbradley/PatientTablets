@@ -13,7 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import martinbradley.security.JsonWebToken;
+import static martinbradley.security.JsonWebTokenVerifier.ValidationResult;
 
 public class Auth0VerifierTest {
     private static final Logger logger = LoggerFactory.getLogger(Auth0VerifierTest.class);
@@ -159,7 +159,9 @@ public class Auth0VerifierTest {
         JsonWebToken validJWT = createJWT();
 
         JsonWebTokenVerifier auth = createVerifier();
-        boolean isValid = auth.isValidAccessRequest(validJWT.toString(), "namespace", "admin");
+        ValidationResult result  = auth.isValidAccessRequest(validJWT.toString(), "namespace", "admin");
+
+        boolean isValid = result.isVerified();
         assertThat(isValid, is(true));
     }
 
@@ -171,7 +173,8 @@ public class Auth0VerifierTest {
         JsonWebToken validJWT = createJWT();
 
         JsonWebTokenVerifier auth = createVerifier();
-        boolean isValid = auth.isValidAccessRequest(validJWT.toString(), "namespace", "admin");
+        ValidationResult result = auth.isValidAccessRequest(validJWT.toString(), "namespace", "admin");
+        boolean isValid = result.isVerified();
         assertThat(isValid, is(false));
     }
     @Test
@@ -183,7 +186,9 @@ public class Auth0VerifierTest {
 
         JsonWebTokenVerifier auth = createVerifier();
                                        // Missing the groups on the request
-        boolean isValid = auth.isValidAccessRequest(validJWT.toString(), "namespace");
+        ValidationResult result = auth.isValidAccessRequest(validJWT.toString(), "namespace");
+        boolean isValid = result.isVerified();
+
         assertThat(isValid, is(false));
     }
 

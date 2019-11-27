@@ -40,7 +40,7 @@ public class AuthenticationBrokerImpl implements AuthenticationBroker
             Set<AuthGroup> groups = userRepo.authenticate(userName, hashedPassword);
 
             logger.debug("authenticate got groups " + groups.size());
-            jwt = jwtFactory.createJWT(groups);
+            jwt = jwtFactory.createJWT(userName, groups);
         } catch (AuthenticationException e) {
             logger.warn("Failed to authenticate ");
             throw new AuthenticationException(e.getMessage());

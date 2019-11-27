@@ -11,13 +11,12 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Map;
+import static martinbradley.security.JsonWebTokenVerifier.ValidationResult;
 
 @SecuredRestfulMethod
 @Provider
@@ -55,16 +54,15 @@ public class JsonWebTokenAuthFilter implements ContainerRequestFilter {
         }
 
         try {
-            if (validateToken(authToken) == false) {
+            final ValidationResult validationOutcome = validateToken(authToken);
+
+            if (validationOutcome.isVerified() == false) {
                 logger.warn("abortWithUnauthorized invalid token");
                 abortWithUnauthorized(requestContext);
             }
-            // add user
-            addUserPrinciple(authToken);
-
-
-
-
+            else {
+                addUserPrinciple(validationOutcome.getUserName(), requestContext);
+            }
 
         } catch (Exception e) {
             logger.warn("abortWithUnauthorized exception ",e.getMessage());
@@ -72,31 +70,35 @@ public class JsonWebTokenAuthFilter implements ContainerRequestFilter {
         }
     }
 
-    private void addUserPrinciple(String authToken) {
-      //final User user = authorizationValidation.isAuthorizationValid(userHeader)
+    private void addUserPrinciple(final String userName, ContainerRequestContext request) {
 
-      //// impl
-      //request.setSecurityContext( new MySecurityContext(user) );
+        logger.info("Add Principle " + userName);
 
-      //// or simple but not the best
-      //request.setSecurityContext( new SecurityContext() {
-      //    @Override
-      //    public boolean isUserInRole(String role) {
-      //        return true; // check roles if you need ...
-      //    }
-      //    @Override
-      //    public boolean isSecure() {
-      //        return false; // check HTTPS
-      //    }
-      //    @Override
-      //    public Principal getUserPrincipal() {
-      //        return user; // return your user here - User must implement Principal
-      //    }
-      //    @Override
-      //    public String getAuthenticationScheme() {
-      //        return null; // ...
-      //    }
-      //}
+        Principal user  = new Principal() {
+            @Override
+            public String getName() {
+                return userName;
+            }
+        };
+        // or simple but not the best
+        request.setSecurityContext( new SecurityContext() {
+            @Override
+            public boolean isUserInRole(String role) {
+                return true; // check roles if you need ...
+            }
+            @Override
+            public boolean isSecure() {
+                return false; // check HTTPS
+            }
+            @Override
+            public Principal getUserPrincipal() {
+                return user;
+            }
+            @Override
+            public String getAuthenticationScheme() {
+                return null; // ...
+            }
+        });
     }
 
     private String getAuthToken(ContainerRequestContext requestContext) {
@@ -165,15 +167,19 @@ public class JsonWebTokenAuthFilter implements ContainerRequestFilter {
                     .startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ");
     }
 
-    private boolean validateToken(String token) throws Exception {
+    private ValidationResult validateToken(String token) throws Exception {
         SecuredRestfulMethodHelper helper = new SecuredRestfulMethodHelper();
 
         String[] requiredGroups = helper.getGroups(resourceInfo);
 
-        boolean isValid = verifier.isValidAccessRequest(token,
+        ValidationResult result = verifier.isValidAccessRequest(token,
                                                         Auth0Constants.AUTH_DOMAIN.getValue(),
                                                         requiredGroups);
+        boolean isValid = result.isVerified();
         logger.warn("Valid token ?" + isValid);
-        return isValid;
+        return result;
     }
+
+
+
 }

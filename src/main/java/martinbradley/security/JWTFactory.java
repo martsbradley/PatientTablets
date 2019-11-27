@@ -78,14 +78,14 @@ public class JWTFactory {
         }
     }
 
-    public JsonWebToken createJWT(Set<AuthGroup> groups) throws Exception {
+    public JsonWebToken createJWT(String userName, Set<AuthGroup> groups) throws Exception {
 
-        JsonWebToken jwt = buildJWT(groups);
+        JsonWebToken jwt = buildJWT(userName, groups);
 
         return jwt;
     }
 
-    private JsonWebToken buildJWT(Set<AuthGroup> groups) throws Exception {
+    private JsonWebToken buildJWT(String userName, Set<AuthGroup> groups) throws Exception {
         JsonWebToken.Builder builder = new JsonWebToken.Builder();
 
         builder.setIssuer(issuer);
@@ -106,6 +106,7 @@ public class JWTFactory {
 
         builder.setIat(issuedAt);
         builder.setExp(expires);
+        builder.setSubject(userName);
 
         JsonWebToken jwt = builder.build();
         jwt.sign(keyPair);

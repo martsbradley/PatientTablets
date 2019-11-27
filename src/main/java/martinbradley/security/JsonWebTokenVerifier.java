@@ -51,19 +51,19 @@ public class JsonWebTokenVerifier {
 
         return allowedGroups;
     }
-    public boolean isValidAccessRequest(String token, 
+    public ValidationResult isValidAccessRequest(String token,
                                         String namespace,
                                         String ... aRequiredGroups) {
         DecodedJWT jwt = getToken(token);
 
         if (jwt == null ) {
             logger.warn("jwt is null");
-            return false;
+            return ValidationResult.failed();
         }
 
         if (aRequiredGroups.length == 0) {
             logger.warn("Need to specify groups when using security");
-            return false;
+            return ValidationResult.failed();
         }
 
         Set<String> allowedGroups = allowedGroups(jwt, namespace);
@@ -84,7 +84,12 @@ public class JsonWebTokenVerifier {
         if (!isValid) {
             logger.warn("Authorization failed for " + token);
         }
-        return isValid;
+
+        String userName = jwt.getSubject();
+
+        ValidationResult result = new ValidationResult(userName, isValid);
+
+        return result;
     }
     /*
      *
@@ -203,5 +208,26 @@ public class JsonWebTokenVerifier {
             scopes = Arrays.stream(allowedScopes).collect(toSet());
         }
         return scopes;
+    }
+
+    public static class ValidationResult {
+        final String userName;
+        final boolean verified;
+        ValidationResult(String userName, boolean verified) {
+            this.userName = userName;
+            this.verified = verified;
+        }
+
+        public static ValidationResult failed() {
+            return new ValidationResult("", false);
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public boolean isVerified() {
+            return verified;
+        }
     }
 }

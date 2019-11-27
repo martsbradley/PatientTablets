@@ -6,9 +6,12 @@ import martinbradley.hospital.core.beans.PrescriptionBean;
 import martinbradley.hospital.core.beans.ValidationErrors;
 import martinbradley.hospital.core.beans.ValidationError;
 
+
+
 import martinbradley.hospital.core.beans.IdentifierBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.ws.rs.core.Response;
 import martinbradley.hospital.web.api.PatientHandler;
 import martinbradley.hospital.web.api.MedicineHandler;
 import javax.inject.Inject;
@@ -19,15 +22,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.NotFoundException;
 import static javax.ws.rs.core.Response.Status;
 import martinbradley.hospital.core.beans.PageInfo;
 import static martinbradley.hospital.core.beans.PageInfo.PageInfoBuilder;
 import java.util.List;
 import java.util.Set;
-import javax.ws.rs.core.GenericEntity;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -89,18 +90,21 @@ public class HospitalResourceImpl
     @Path("patient")
     @Produces("application/json")
     @SecuredRestfulMethod(groups={"admin"})
-    public Response savePatient(PatientBean patientBean)
+    public Response savePatient(PatientBean patientBean,
+                                @Context SecurityContext securityContext)
     {
-        logger.info("savePatient " + patientBean);
-	ValidationErrors validationResult = validate(patientBean);
+        String userName = securityContext.getUserPrincipal().getName();
+        logger.info(userName + " called savePatient " + patientBean);
 
-	if (validationResult.hasErrors()) {
-	    logger.info("savePatient returning validation message");
-            return Response.status(Status.BAD_REQUEST)
-                           .type(MediaType.APPLICATION_JSON)
-                           .entity(validationResult)
-                           .build();
-	}
+        ValidationErrors validationResult = validate(patientBean);
+
+        if (validationResult.hasErrors()) {
+            logger.info("savePatient returning validation message");
+                return Response.status(Status.BAD_REQUEST)
+                               .type(MediaType.APPLICATION_JSON)
+                               .entity(validationResult)
+                               .build();
+        }
 
 
         MessageCollection messages = new MessageCollection();
@@ -169,7 +173,8 @@ public class HospitalResourceImpl
     @SecuredRestfulMethod(groups={"admin"})
     public Response savePrescription(@PathParam("patientId") long patientId,  
                                      @PathParam("medicineId") long medicineId,  
-                                     PrescriptionBean prescriptionBean)
+                                     PrescriptionBean prescriptionBean,
+                                     @Context SecurityContext securityContext)
     {
         PatientBean patient = patientHandler.loadById(patientId);
         MedicineBean medicine = medicineHandler.loadById(medicineId);
@@ -187,7 +192,7 @@ public class HospitalResourceImpl
 
         patient.addPrescription(prescriptionBean);
 
-        Response result = savePatient(patient);
+        Response result = savePatient(patient, securityContext);
 
         //return Response.status(Response.Status.OK).build();
         return result;

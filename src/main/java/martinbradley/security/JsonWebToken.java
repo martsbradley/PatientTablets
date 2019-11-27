@@ -16,6 +16,7 @@ public class JsonWebToken {
     private final String scope;
     private final String namespace;
     private final String[] groups;
+    private final String subject;
     private static final Logger logger = LoggerFactory.getLogger(JsonWebToken.class);
     private String jwtAuthTokenValue = "";
 
@@ -26,6 +27,7 @@ public class JsonWebToken {
         scope     = aBuilder.scope;
         namespace = aBuilder.namespace;
         groups    = aBuilder.groups;
+        subject   = aBuilder.subject;
     }
 
     public String getHeader() {
@@ -39,12 +41,14 @@ public class JsonWebToken {
 
         logger.debug("**Building Payload");
         JSONObject payload = new JSONObject();
-        payload.put("sub","1234567890");
         payload.put("name", "Martin Bradley");
         payload.put("iss", issuer);
         payload.put("scope", scope);
         payload.put("iat", new Long(iat));
         payload.put("exp", new Long(exp));
+        payload.put("sub", subject);
+        logger.warn("Created token with subject " + subject);
+        //payload.put("sub","1234567890");
 
         logger.debug("payload" + payload.toString());
 
@@ -135,6 +139,7 @@ public class JsonWebToken {
         String scope;
         String namespace;
         String[] groups;
+        String subject;
 
         public Builder setIssuer(String aIssuer) {
             this.issuer = aIssuer;
@@ -155,6 +160,10 @@ public class JsonWebToken {
         public Builder setGroups(String namespace, String ... groups) {
             this.namespace = namespace;
             this.groups = groups;
+            return this;
+        }
+        public Builder setSubject(String aSubject) {
+            this.subject = aSubject;
             return this;
         }
         public JsonWebToken build(){
