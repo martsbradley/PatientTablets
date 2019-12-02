@@ -1,6 +1,5 @@
 package martinbradley.security;
 
-import martinbradley.security.JWTFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
@@ -26,7 +25,8 @@ public class Auth0VerifierTest {
         String keyStorePath = "/home/martin/Software/Security/JavaKeytool/examplestore";
         char [] keyStorePassword = "abcdef".toCharArray();
 
-        JWTFactory factory = new JWTFactory();
+        KeyStoreLoader factory = new KeyStoreLoader(AuthenticationConstants.AUTH_ISSUER.getValue(),
+                                                    AuthenticationConstants.AUTH_DOMAIN.getValue());
         keyPair = factory.getKeyPair(keyStorePath,keyStorePassword);
     }
 

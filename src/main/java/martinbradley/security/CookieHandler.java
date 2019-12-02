@@ -1,17 +1,13 @@
 package martinbradley.security;
 
-import javax.enterprise.inject.New;
-import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 
-import martinbradley.security.JsonWebToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.servlet.http.HttpServletRequest;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.NewCookie;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CookieHandler {
     private static Logger logger = LoggerFactory.getLogger(CookieHandler.class);
@@ -26,7 +22,7 @@ public class CookieHandler {
         cookieNames.add(AUTH_GROUPS);
         cookieNames.add(AUTH_JWT_TOKEN);
         cookieNames.add(AUTH_LOGGED_IN);
-        domain = Auth0Constants.AUTH_DOMAIN.getValue();
+        domain = AuthenticationConstants.AUTH_DOMAIN.getValue();
     }
                                          
     public List<NewCookie> handleSuccessfulLogin(JsonWebToken jSWebToken) throws Exception {
@@ -58,14 +54,9 @@ public class CookieHandler {
 
         cookies.add(new NewCookie(AUTH_LOGGED_IN, "loggedIn", path, domain, comment, maxAge, useHttps, notHttpOnly));
 
-        logger.debug("Added auth0Groups            " + groupsStr);
+        logger.debug("Added groups            " + groupsStr);
         logger.debug("Added Cookie jwtToken" );
 
-        // Between the login and the callback the http session
-        // stores some data for auth0
-        // after this callback is executed that state is no longer needed.
-        // removing the session because for a restful frontend there
-        // should be no client state stored.
         return cookies;
     }
     public void clearCookies(HttpServletResponse response) {

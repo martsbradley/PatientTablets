@@ -49,6 +49,7 @@ public class HospitalResourceImpl
     @GET
     @Path("patient/{id}")
     @Produces("application/json")
+    @SecuredRestfulMethod(groups={"read"})
     public Response getPatient(@PathParam("id") long patientId)
     {
         logger.info("getPatient byId " + patientId);
@@ -67,6 +68,7 @@ public class HospitalResourceImpl
     @GET
     @Path("patients/")
     @Produces("application/json")
+    @SecuredRestfulMethod(groups={"read"})
     public Response pagePatients(@QueryParam("start")  int aStart,
                                  @QueryParam("max")    int aMax,
                                  @QueryParam("sortby") String aSortBy)
@@ -89,7 +91,7 @@ public class HospitalResourceImpl
     @POST
     @Path("patient")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"admin"})
+    @SecuredRestfulMethod(groups={"write"})
     public Response savePatient(PatientBean patientBean,
                                 @Context SecurityContext securityContext)
     {
@@ -133,6 +135,7 @@ public class HospitalResourceImpl
     @GET
     @Path("patients/total")
     @Produces("application/json")
+    @SecuredRestfulMethod(groups={"read"})
     public Response totalPatients()
     {
         logger.debug("totalPatients called");
@@ -146,6 +149,7 @@ public class HospitalResourceImpl
     @GET
     @Path("medicines/")
     @Produces("application/json")
+    @SecuredRestfulMethod(groups={"read"})
     public Response pageMedicines(@QueryParam("start")  int aStart,
                                   @QueryParam("max")    int aMax,
                                   @QueryParam("sortby") String aSortBy,
@@ -170,7 +174,7 @@ public class HospitalResourceImpl
     @POST
     @Path("patient/{patientId}/medicine/{medicineId}")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"admin"})
+    @SecuredRestfulMethod(groups={"write"})
     public Response savePrescription(@PathParam("patientId") long patientId,  
                                      @PathParam("medicineId") long medicineId,  
                                      PrescriptionBean prescriptionBean,
@@ -201,6 +205,7 @@ public class HospitalResourceImpl
     @GET
     @Path("medicines/total")
     @Produces("application/json")
+    @SecuredRestfulMethod(groups={"read"})
     public Response totalMedicines(@QueryParam("filter") String filter)
     {
         logger.debug("totalMedicines called");
@@ -214,7 +219,7 @@ public class HospitalResourceImpl
     @GET
     @Path("patient/{patientId}/images")
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"admin"})
+    @SecuredRestfulMethod(groups={"read"})
     public Response listImages(@PathParam("patientId") long patientId) {
         logger.debug("listImages");
         List<String> urls = patientHandler.listImages(patientId);
@@ -229,7 +234,7 @@ public class HospitalResourceImpl
     @Path("patient/{patientId}/image")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("application/json")
-    @SecuredRestfulMethod(groups={"admin"})
+    @SecuredRestfulMethod(groups={"write"})
     @ContentLengthMethod
     public Response addImage(@PathParam("patientId") long patientId,
                              @MultipartForm ImageUploadedBean myForm)
@@ -246,7 +251,6 @@ public class HospitalResourceImpl
                        .type(MediaType.APPLICATION_JSON)
                        .build();
     }
-
 
     private ValidationErrors validate(PatientBean patientBean) {
 

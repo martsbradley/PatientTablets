@@ -17,7 +17,7 @@ public class PasswordHelperTest {
     public void makePassword() {
         PasswordHelper ph = new PasswordHelper();
         String salt = ph.generateSalt();
-        String passwordHash = ph.hashPassword("marty", salt);
+        String passwordHash = ph.hashPassword("lisa", salt);
         logger.info("salt " + salt);
         logger.info("passwordHash " + passwordHash);
     }

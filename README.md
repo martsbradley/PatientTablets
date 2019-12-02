@@ -14,15 +14,18 @@ First get the principle coming in the token and when queried in authenticated me
 
 Remove from Auth0, replace with Spring Security.
 
-Ear                                     Shared Library 
+
+AuthenticationEar                       AuthenticationShared jar
 AuthenticationEndPoint
 AuthGroup                               Auth0Constants
 AuthUser                                JsonWebTokenAuthFilter
 AuthUserGroup                           JsonWebTokenVerifier
-AuthUserGroupRepo                       JWTFactory(Only the public key needed)
+AuthUserGroupRepo                       KeyLoader (Only the public key needed)
 CookieHandler                           SecuredResfulMethod
 JsonWebToken                            SecuredResfulMethodHelper
-JWTFactory                             
+AuthenticationBrokerImpl                
+AuthenticationBroker
+PasswordHelper
                                        
                                        
 Explain...

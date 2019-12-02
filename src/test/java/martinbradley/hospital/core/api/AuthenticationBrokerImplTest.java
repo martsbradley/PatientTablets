@@ -3,8 +3,9 @@ package martinbradley.hospital.core.api;
 import martinbradley.hospital.core.domain.password.AuthGroup;
 import martinbradley.hospital.core.domain.password.Salt;
 import martinbradley.hospital.persistence.repository.AuthUserGroupRepo;
-import martinbradley.security.JWTFactory;
+import martinbradley.security.AuthenticationConstants;
 import martinbradley.security.JsonWebToken;
+import martinbradley.security.KeyStoreLoader;
 import mockit.*;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +28,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class AuthenticationBrokerImplTest
 {
     @Injectable AuthUserGroupRepo mockRepo;
-    @Injectable JWTFactory jwtFactory;
+    /*KeyStoreLoader keyStore = new KeyStoreLoader(AuthenticationConstants.AUTH_ISSUER.getValue(),
+            AuthenticationConstants.AUTH_DOMAIN.getValue());*/
+
     @Tested AuthenticationBrokerImpl impl;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationBrokerImplTest.class);
 

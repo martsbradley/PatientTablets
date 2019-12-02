@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
-import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -15,6 +14,7 @@ import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.security.Principal;
+import java.security.PublicKey;
 import java.util.Map;
 import static martinbradley.security.JsonWebTokenVerifier.ValidationResult;
 
@@ -27,18 +27,19 @@ public class JsonWebTokenAuthFilter implements ContainerRequestFilter {
     private static final String REALM = "example";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
     @Context ResourceInfo resourceInfo;
-    private String auth0Issuer;
 
     private JsonWebTokenVerifier verifier;
 
     @Context
     public void setServletContext(ServletContext aContext) throws JwkException {
-        auth0Issuer     = Auth0Constants.AUTH0_ISSUER.getValue();
-        logger.warn("Auth Issuer : " + auth0Issuer);
-        logger.warn("creating JWTFactory");
-        JWTFactory jwtFactory = new JWTFactory();
-        logger.warn("created JWTFactory");
-        verifier = new JsonWebTokenVerifier(auth0Issuer, jwtFactory.getPublicKey());
+
+        String issuer = AuthenticationConstants.AUTH_ISSUER.getValue();
+
+        KeyStoreLoader keyLoader = new KeyStoreLoader(AuthenticationConstants.AUTH_ISSUER.getValue(),
+                                                      AuthenticationConstants.AUTH_DOMAIN.getValue());
+        PublicKey publicKey = keyLoader.getPublicKey();
+
+        verifier = new JsonWebTokenVerifier(issuer, publicKey);
     }
 
     @Override
@@ -173,7 +174,7 @@ public class JsonWebTokenAuthFilter implements ContainerRequestFilter {
         String[] requiredGroups = helper.getGroups(resourceInfo);
 
         ValidationResult result = verifier.isValidAccessRequest(token,
-                                                        Auth0Constants.AUTH_DOMAIN.getValue(),
+                                                        AuthenticationConstants.AUTH_DOMAIN.getValue(),
                                                         requiredGroups);
         boolean isValid = result.isVerified();
         logger.warn("Valid token ?" + isValid);

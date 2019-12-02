@@ -1,6 +1,5 @@
 package martinbradley.security;
 
-import martinbradley.hospital.core.domain.password.AuthGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,25 +7,19 @@ import javax.enterprise.inject.Model;
 import java.io.FileInputStream;
 import java.security.*;
 import java.security.cert.Certificate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Set;
 
-//  This is the high level class for creating a JWT
-//  Handling the RSA signature
 @Model
-public class JWTFactory {
-
-    private static final Logger logger = LoggerFactory.getLogger(JWTFactory.class);
+public class KeyStoreLoader {
+    private final KeyPair keyPair;
     private String issuer = "";
     private String namespace ="";
-    private final KeyPair keyPair;
+    private static final Logger logger = LoggerFactory.getLogger(KeyStoreLoader.class);
 
-    public JWTFactory() {
+    public KeyStoreLoader(String issuer, String namespace) {
 
-        this.issuer = Auth0Constants.AUTH0_ISSUER.getValue();
-        this.namespace = Auth0Constants.AUTH_DOMAIN.getValue();
+        this.issuer = issuer;//AuthenticationConstants.AUTH_ISSUER.getValue();
+        this.namespace = namespace;//AuthenticationConstants.AUTH_DOMAIN.getValue();
 
         keyPair = loadKeyStore();
     }
@@ -35,10 +28,14 @@ public class JWTFactory {
         return keyPair.getPublic();
     }
 
+    public KeyPair getKeyPair() {
+        return keyPair;
+    }
+
     private KeyPair loadKeyStore() {
 
-        String keyStorePath = Auth0Constants.AUTH_KEYSTORE.getValue();
-        char [] keyStorePassword = Auth0Constants.AUTH_KEYSTORE_PASSWD.getValue().toCharArray();;
+        String keyStorePath = AuthenticationConstants.AUTH_KEYSTORE.getValue();
+        char [] keyStorePassword = AuthenticationConstants.AUTH_KEYSTORE_PASSWD.getValue().toCharArray();;
 
         KeyPair keyPair = getKeyPair(keyStorePath, keyStorePassword);
         return keyPair;
@@ -77,44 +74,4 @@ public class JWTFactory {
             throw new RuntimeException("Unable to load keystore from " + keyStorePath);
         }
     }
-
-    public JsonWebToken createJWT(String userName, Set<AuthGroup> groups) throws Exception {
-
-        JsonWebToken jwt = buildJWT(userName, groups);
-
-        return jwt;
-    }
-
-    private JsonWebToken buildJWT(String userName, Set<AuthGroup> groups) throws Exception {
-        JsonWebToken.Builder builder = new JsonWebToken.Builder();
-
-        builder.setIssuer(issuer);
-
-        String[] groupsArr = new String[groups.size()];
-        int idx = 0;
-        for (AuthGroup group: groups) {
-            groupsArr[idx++] = group.getName();
-        }
-
-        builder.setGroups(namespace, groupsArr);
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expiryTime = now.plusMinutes(10);
-
-        long issuedAt = toSinceEpoch(now);
-        long expires  = toSinceEpoch(expiryTime);
-
-        builder.setIat(issuedAt);
-        builder.setExp(expires);
-        builder.setSubject(userName);
-
-        JsonWebToken jwt = builder.build();
-        jwt.sign(keyPair);
-        return jwt;
-    }
-
-    private long toSinceEpoch(LocalDateTime time) {
-        return time.atZone(ZoneId.systemDefault()).toEpochSecond();
-    }
 }
-

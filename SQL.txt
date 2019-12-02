@@ -68,13 +68,25 @@ create table auth_user_group(
 
 
 insert into auth_group(name,description)
-values ('admin', 'root access');
+values ('write', 'root access');
+
+insert into auth_group(name,description)
+values ('read', 'normal users');
 
 insert into auth_user(username, salt, passwordHash)
 values ('marty', 'e6f5f886028b4fd1903605a4f991f19a95cb0347c3be68ac7ce06053365f8c75','2ac0f6fb4cf32ac9ee6b45ca7ee5a24367bff3132bf97be190eac413aa02d51a');
 
+insert into auth_user(username, salt, passwordHash)
+values ('lisa', '8a27130313b6343de45eca0c0e330f0e37f792070e8e0e78cb7117f73db1978f','26dff39163a880095c23279f2ec92ab6b9ae901427fa4fc5bd856ba69ca32eea');
+
 insert into auth_user_group(user_id, group_id, created)
 values ( 1, 1,'2019-01-11');
+
+insert into auth_user_group(user_id, group_id, created)
+values ( 1, 2,'2019-01-11');
+
+insert into auth_user_group(user_id, group_id, created)
+values ( 2, 2,'2019-01-11');
 
 -- Patients;
 insert into patient (forename,surname,sex,dateofbirth,version)
