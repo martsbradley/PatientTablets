@@ -22,10 +22,9 @@ AuthUser                                JsonWebTokenAuthFilter
 AuthUserGroup                           JsonWebTokenVerifier
 AuthUserGroupRepo                       KeyLoader (Only the public key needed)
 CookieHandler                           SecuredResfulMethod
-JsonWebToken                            SecuredResfulMethodHelper
-AuthenticationBrokerImpl                
-AuthenticationBroker
-PasswordHelper
+AuthenticationBrokerImpl                SecuredResfulMethodHelper
+AuthenticationBroker                    JsonWebToken
+                                        PasswordHelper
                                        
                                        
 Explain...
